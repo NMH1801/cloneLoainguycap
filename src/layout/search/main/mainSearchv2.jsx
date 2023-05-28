@@ -6,6 +6,7 @@ import RenderNavBar from "../navbar/navbar";
 import { UseDataContextSideBar } from "../sidebar/sidebar";
 
 export const MainSearchV2 = () => {
+
   const { tab } = useContext(DataContext);
   let content = null;
   switch (tab) {

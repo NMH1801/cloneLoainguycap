@@ -5,6 +5,7 @@ import { FaBars } from "react-icons/fa";
 import { DataContext } from "../../../context/DataContext";
 function RenderNavBar() {
   const { tab, setTab } = useContext(DataContext);
+  console.log("render-navbar");
   function checkActive(param) {
     if (param === tab) {
       return "navbarButtonActive";
