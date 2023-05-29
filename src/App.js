@@ -10,25 +10,28 @@ import {
   Outlet,
 } from "react-router-dom";
 import { Tintuc } from "./layout/tintuc/tintuc";
-import { Login } from "./layout/dangnhap/Dangnhap";
+import { Login } from "./layout/dangnhap/dangnhap";
 import { Test } from "./Test";
+import { Admin } from "./layout/admin/admin";
+import { LoginProvider } from "./context/loginContext";
 function App() {
   return (
     <div>
       <Router>
-        <DataProvider>
+        <LoginProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
             <Route path="/dang-nhap" element={<Login />} />
-            <Route path="/*" element={<NotFound />} />
-            <Route path="/test" element={<Test/>}/>
+            <Route path="/admin" element={<Admin />} />
+
             <Route path="/" element={<OutletHeaderFooter />}>
               <Route path="/search" element={<MainSearchV2 />} />
               <Route path="/tintuc" element={<Tintuc />} />
             </Route>
-
+            <Route path="/" element={<Index />} />
+            <Route path="/test" element={<Test />} />
+            <Route path="/*" element={<NotFound />} />
           </Routes>
-        </DataProvider>
+        </LoginProvider>
       </Router>
     </div>
   );
@@ -37,13 +40,14 @@ function App() {
 function OutletHeaderFooter() {
   return (
     <>
-      <Header />
-      <Outlet />
-      <Footer />
+      <DataProvider>
+        <Header />
+        <Outlet />
+        <Footer />
+      </DataProvider>
     </>
   );
 }
-
 
 function Index() {
   return <h1>Trang chủ</h1>;
@@ -51,7 +55,5 @@ function Index() {
 function NotFound() {
   return <h1>Link Not Found</h1>;
 }
-
-
 
 export default App;

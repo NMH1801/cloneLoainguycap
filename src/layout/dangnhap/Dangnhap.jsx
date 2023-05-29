@@ -1,7 +1,7 @@
 import dangnhap from "./dangnhap.module.css";
 import React, { useState } from "react";
 import { Alert, Row, Col, Form, Input, Button } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 export const Login = () => {
@@ -51,6 +51,7 @@ function Footer() {
 }
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
   const [message, setMessage] = useState("");
@@ -64,10 +65,14 @@ const LoginForm = () => {
     setLoading(true);
     setSuccess(true);
     try {
-      const response = await axios.post('http://wlp.howizbiz.com/api/web-authenticate', value);
+      const response = await axios.post(
+        "http://wlp.howizbiz.com/api/web-authenticate",
+        value
+      );
       console.log(response.data);
       setLoading(false);
-      setSuccess(true);
+      localStorage.setItem("jwtToken", response.data.access_token);
+      navigate("/admin");
       // Xử lý dữ liệu phản hồi ở đây
     } catch (error) {
       setMessage(error.response.data.message);
@@ -84,7 +89,7 @@ const LoginForm = () => {
       onFinishFailed={onFinishFailed}
       size="large"
       wrapperCol={{
-        span: 24
+        span: 24,
       }}
       style={{
         padding: "16px",
@@ -92,10 +97,7 @@ const LoginForm = () => {
         width: "400px",
       }}
     >
-      {!success && <Alert
-        message={message}
-        type="error"
-        showIcon />}
+      {!success && <Alert message={message} type="error" showIcon />}
       <Link to="/">
         <img
           src="https://loainguycap.ceid.gov.vn/static/img/logoColor.e5de23ce.png"
@@ -116,7 +118,6 @@ const LoginForm = () => {
             message: "Vui lòng nhập tên đăng nhập!",
           },
         ]}
-
       >
         <Input
           prefix={<UserOutlined className="site-form-item-icon" />}
@@ -140,38 +141,47 @@ const LoginForm = () => {
       </Form.Item>
       <Form.Item>
         <Form.Item>
-          {loading ? <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            size="large"
-            style={{
-              width: "100%",
-              backgroundColor: "red",
-              borderRadius: "24px"
-            }}
-            loading
-          >
-            Đang đăng nhập
-          </Button> : <Button
-            type="primary"
-            htmlType="submit"
-            className="login-form-button"
-            size="large"
-            style={{
-              width: "100%",
-              backgroundColor: "red",
-              borderRadius: "24px"
-            }}
-          >
-            Đăng nhập
-          </Button>}
+          {loading ? (
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+              size="large"
+              style={{
+                width: "100%",
+                backgroundColor: "red",
+                borderRadius: "24px",
+              }}
+              loading
+            >
+              Đang đăng nhập
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+              size="large"
+              style={{
+                width: "100%",
+                backgroundColor: "red",
+                borderRadius: "24px",
+              }}
+            >
+              Đăng nhập
+            </Button>
+          )}
         </Form.Item>
-        <Button type="link" href="/quen-mat-khau" style={{
-          color: "red"
-        }}>Quên mật khẩu</Button>
+        <Button
+          type="link"
+          href="/quen-mat-khau"
+          style={{
+            color: "red",
+          }}
+        >
+          Quên mật khẩu
+        </Button>
       </Form.Item>
     </Form>
   );
 };
-
