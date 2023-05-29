@@ -1,86 +1,70 @@
-import { Button, Form, Input } from "antd";
-import { Link } from "react-router-dom";
-import { LockOutlined, UserOutlined } from "@ant-design/icons";
-export const Test = () => {
-    const onFinish = (values) => {
-      console.log("Received values of form: ", values);
-    };
-    const onFinishFailed = () => {
-      console.log("failed");
-    };
-    return (
-      <Form
-      name="login-form"
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
+import React from 'react';
+import './index.css';
+import { Button, Checkbox, Form, Input } from 'antd';
+const onFinish = (values) => {
+  console.log('Success:', values);
+};
+const onFinishFailed = (errorInfo) => {
+  console.log('Failed:', errorInfo);
+};
+export const Test = () => (
+  <Form
+    name="basic"
+    wrapperCol={{
+      span: 24,
+    }}
+
+    initialValues={{
+      remember: true,
+    }}
+    onFinish={onFinish}
+    onFinishFailed={onFinishFailed}
+    autoComplete="off"
+  >
+    <Form.Item
+      name="username"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your username!',
+        },
+      ]}
+    >
+      <Input />
+    </Form.Item>
+
+    <Form.Item
+      name="password"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your password!',
+        },
+      ]}
+    >
+      <Input.Password />
+    </Form.Item>
+
+    <Form.Item
+      name="remember"
+      valuePropName="checked"
       wrapperCol={{
-        span: 20
+        offset: 8,
+        span: 16,
       }}
-      style={{
-        padding: "16px",
-        textAlign: "center",
-        minWidth: "600px",
+    >
+      <Checkbox>Remember me</Checkbox>
+    </Form.Item>
+
+    <Form.Item
+      wrapperCol={{
+        offset: 8,
+        span: 16,
       }}
-      >
-        <Link to="/">
-          <img
-            src="https://loainguycap.ceid.gov.vn/static/img/logoColor.e5de23ce.png"
-            alt="Logo"
-            style={{
-              height: "110px",
-            }}
-          />
-        </Link>
-  
-        <h2>Đăng nhập</h2>
-  
-        <Form.Item
-          name="username"
-          rules={[
-            {
-              required: true,
-              message: "Vui lòng nhập tên đăng nhập!",
-            },
-          ]}
-  
-        >
-          <Input
-            prefix={<UserOutlined className="site-form-item-icon" />}
-            placeholder="Tên đăng nhập"
-            wrapperCol={{
-              span: 20
-            }}
-          />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Vui lòng nhập mật khẩu!",
-            },
-          ]}
-        >
-          <Input.Password
-            prefix={<LockOutlined className="site-form-item-icon" />}
-            type="password"
-            placeholder="Mật khẩu"
-          />
-        </Form.Item>
-        <Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              className="login-form-button"
-            >
-              Log in
-            </Button>
-          </Form.Item>
-          <Link className="login-form-forgot" href="/quen-mat-khau">
-            Forgot password
-          </Link>
-        </Form.Item>
-      </Form>
-    );
-  };
+    >
+      <Button type="primary" htmlType="submit">
+        Submit
+      </Button>
+    </Form.Item>
+  </Form>
+);

@@ -3,7 +3,7 @@ import { FaBars } from "react-icons/fa";
 import "./header.css";
 import { useContext, useState, memo } from "react";
 import { DataContext } from "../../context/DataContext";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 const HeaderRender = memo((props) => {
   console.log("renderHeader");
   // const { setDataFilter } = useContext(DataContext);
@@ -20,7 +20,7 @@ const HeaderRender = memo((props) => {
       }
     });
   };
-  
+
   const [inputValue, setInputValue] = useState("");
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -28,10 +28,13 @@ const HeaderRender = memo((props) => {
   return (
     <div className="header">
       <div className="topHeader">
-        <button className="loginButton">
-          <span>Đăng nhập</span>
-        </button>
-      </div>
+        <Link to="/dang-nhap">
+          <button className="loginButton">
+
+            <span>Đăng nhập</span>
+          </button>
+        </Link>
+      </div >
       <div className="bottomHeader">
         <div className="leftHeader">
           <a href="/search">
@@ -74,14 +77,14 @@ const HeaderRender = memo((props) => {
           </Link>
         </div>
       </div>
-    </div>
+    </div >
   );
 });
 
 
-const Header =() =>{
+const Header = () => {
   const { setDataFilter } = useContext(DataContext);
-  return <HeaderRender setDataFilter={setDataFilter}/>
+  return <HeaderRender setDataFilter={setDataFilter} />
 }
 
 export default Header;
