@@ -1,6 +1,6 @@
 const endpoint = "https://loainguycap.ceid.gov.vn/api/"
 const routerObject = {
-    domain:"https://loainguycap.ceid.gov.vn",
+    domain:"http://wlp.howizbiz.com",
     loaihientrang:"loaihientrangs",
     redbook:"danhmuccha?ma_danh_mucs[]=REDBOOK",
     iucn:"danhmuccha?ma_danh_mucs[]=IUCN",
@@ -20,4 +20,6 @@ function getRoute(param, filter) {
     }
     return endpoint + routerObject[param] + filter;
 }
+
+
 export default getRoute;

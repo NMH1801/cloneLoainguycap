@@ -26,6 +26,7 @@
   right: 64px;
   padding: 0 16px;
   font-family: "Roboto";
+  cursor: pointer;
 }
 
 .loginButton span {
