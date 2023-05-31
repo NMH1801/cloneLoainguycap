@@ -14,6 +14,7 @@ import { Login } from "./layout/dangnhap/dangnhap";
 import { Test } from "./Test";
 import { Admin } from "./layout/admin/admin";
 import { LoginProvider } from "./context/loginContext";
+import { User } from "./layout/admin/nguoidung";
 function App() {
   return (
     <div>
@@ -22,6 +23,7 @@ function App() {
           <Routes>
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="hethong/nguoidung" element={<User/>}/>
 
             <Route path="/" element={<OutletHeaderFooter />}>
               <Route path="/search" element={<MainSearchV2 />} />

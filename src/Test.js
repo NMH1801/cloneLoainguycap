@@ -23,7 +23,8 @@ export const Test = () => {
         }}
       >
         <Row align="middle" style={{alignItems:'center'}}>
-        <Button
+        <Space size="middle">
+          <Button
           type="text"
           icon={<MenuOutlined style={{fontSize: "18px"}} />}
           onClick={() => setCollapsed(!collapsed)}
@@ -35,11 +36,12 @@ export const Test = () => {
             alignItems: "center"
           }}
         />
-        <Space align="center"></Space>
-        <Link to="./index" style={{alignItems:"center"}}>
+        <Link to="./index" style={{display:"flex", alignItems:"center"}}>
         <img src={logoImage} alt="Logo" style={{height: "40px"}}/>
         </Link>
-        <h1>Test</h1>
+        <h1>HỆ THỐNG BÁO CÁO VỀ HIỆN TRẠNG LOÀI NGUY CẤP, QUÝ, HIẾM ĐƯỢC ƯU TIÊN BẢO VỆ</h1>
+        </Space>
+        
         </Row>
       </Header>
       <Layout>
