@@ -1,70 +1,85 @@
-import React from 'react';
-import './index.css';
-import { Button, Checkbox, Form, Input } from 'antd';
-const onFinish = (values) => {
-  console.log('Success:', values);
+import {
+  MenuOutlined,
+  UploadOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+} from '@ant-design/icons';
+import { Button, Layout, Menu, theme, Row, Space } from 'antd';
+import { useState } from 'react';
+import logoImage from './assets/logo.png';
+import { Link } from 'react-router-dom';
+const { Header, Sider, Content } = Layout;
+export const Test = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const {
+    token: { colorBgContainer },
+  } = theme.useToken();
+  return (
+    <Layout>
+      <Header
+        style={{
+          padding:"0px 16px",
+          background: colorBgContainer,
+        }}
+      >
+        <Row align="middle" style={{alignItems:'center'}}>
+        <Button
+          type="text"
+          icon={<MenuOutlined style={{fontSize: "18px"}} />}
+          onClick={() => setCollapsed(!collapsed)}
+          style={{
+            fontSize: '14px',
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            alignItems: "center"
+          }}
+        />
+        <Space align="center"></Space>
+        <Link to="./index" style={{alignItems:"center"}}>
+        <img src={logoImage} alt="Logo" style={{height: "40px"}}/>
+        </Link>
+        <h1>Test</h1>
+        </Row>
+      </Header>
+      <Layout>
+
+        <Sider trigger={null} collapsible collapsed={collapsed}>
+          <div className="demo-logo-vertical" />
+          <Menu
+            theme="dark"
+            mode="inline"
+            defaultSelectedKeys={['1']}
+            items={[
+              {
+                key: '1',
+                icon: <UserOutlined />,
+                label: 'nav 1',
+              },
+              {
+                key: '2',
+                icon: <VideoCameraOutlined />,
+                label: 'nav 2',
+              },
+              {
+                key: '3',
+                icon: <UploadOutlined />,
+                label: 'nav 3',
+              },
+            ]}
+          />
+        </Sider>
+        <Content
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 280,
+            background: colorBgContainer,
+          }}
+        >
+          Content
+        </Content>
+      </Layout>
+    </Layout>
+  );
 };
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-export const Test = () => (
-  <Form
-    name="basic"
-    wrapperCol={{
-      span: 24,
-    }}
-
-    initialValues={{
-      remember: true,
-    }}
-    onFinish={onFinish}
-    onFinishFailed={onFinishFailed}
-    autoComplete="off"
-  >
-    <Form.Item
-      name="username"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your username!',
-        },
-      ]}
-    >
-      <Input />
-    </Form.Item>
-
-    <Form.Item
-      name="password"
-      rules={[
-        {
-          required: true,
-          message: 'Please input your password!',
-        },
-      ]}
-    >
-      <Input.Password />
-    </Form.Item>
-
-    <Form.Item
-      name="remember"
-      valuePropName="checked"
-      wrapperCol={{
-        offset: 8,
-        span: 16,
-      }}
-    >
-      <Checkbox>Remember me</Checkbox>
-    </Form.Item>
-
-    <Form.Item
-      wrapperCol={{
-        offset: 8,
-        span: 16,
-      }}
-    >
-      <Button type="primary" htmlType="submit">
-        Submit
-      </Button>
-    </Form.Item>
-  </Form>
-);
