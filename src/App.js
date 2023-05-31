@@ -14,7 +14,8 @@ import { Login } from "./layout/dangnhap/dangnhap";
 import { Test } from "./Test";
 import { Admin } from "./layout/admin/admin";
 import { LoginProvider } from "./context/loginContext";
-import { User } from "./layout/admin/nguoidung";
+import { HeaderUser } from "./layout/admin/header";
+import { Combine } from "./layout/admin/combine";
 function App() {
   return (
     <div>
@@ -23,7 +24,7 @@ function App() {
           <Routes>
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="hethong/nguoidung" element={<User/>}/>
+            <Route path="hethong/nguoidung" element={<HeaderUser/>}/>
 
             <Route path="/" element={<OutletHeaderFooter />}>
               <Route path="/search" element={<MainSearchV2 />} />
@@ -31,6 +32,7 @@ function App() {
             </Route>
             <Route path="/" element={<Index />} />
             <Route path="/test" element={<Test />} />
+            <Route path="/combine" element={<Combine/>}/>
             <Route path="/*" element={<NotFound />} />
           </Routes>
         </LoginProvider>
