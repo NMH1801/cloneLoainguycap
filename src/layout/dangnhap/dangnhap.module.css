@@ -47,3 +47,7 @@
     margin: 0px !important;
     margin-bottom: 16px !important;
 }
+
+.input:focus{
+  background-color: red;
+}

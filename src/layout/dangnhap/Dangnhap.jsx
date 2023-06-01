@@ -51,7 +51,6 @@ function Footer() {
 }
 
 const LoginForm = () => {
-
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(false);

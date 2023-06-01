@@ -15,7 +15,7 @@ import { Test } from "./Test";
 import { Admin } from "./layout/admin/admin";
 import { LoginProvider } from "./context/loginContext";
 import { HeaderUser } from "./layout/admin/header";
-import { Combine } from "./layout/admin/combine";
+import { Nguoidung } from "./layout/admin/user";
 function App() {
   return (
     <div>
@@ -24,15 +24,18 @@ function App() {
           <Routes>
             <Route path="/dang-nhap" element={<Login />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="hethong/nguoidung" element={<HeaderUser/>}/>
+            {/* <Route path="hethong/nguoidung" element={<HeaderUser/>}/> */}
 
             <Route path="/" element={<OutletHeaderFooter />}>
               <Route path="/search" element={<MainSearchV2 />} />
               <Route path="/tintuc" element={<Tintuc />} />
             </Route>
+            <Route path="/" element={<OutletAdmin/>}>
+              <Route path="/hethong/nguoidung" element={<Nguoidung/>}></Route>
+            </Route>
+
             <Route path="/" element={<Index />} />
             <Route path="/test" element={<Test />} />
-            <Route path="/combine" element={<Combine/>}/>
             <Route path="/*" element={<NotFound />} />
           </Routes>
         </LoginProvider>
@@ -53,6 +56,13 @@ function OutletHeaderFooter() {
   );
 }
 
+function OutletAdmin(){
+  return (
+    <>
+      <HeaderUser/>
+    </>
+  )
+}
 function Index() {
   return <h1>Trang chủ</h1>;
 }
