@@ -51,6 +51,7 @@ export const HeaderUser = () => {
         padding: "0px 16px",
         background: colorBgContainer,
         boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+        zIndex:100,
       }}
     >
       <Row align="middle" style={{ alignItems: "center" }}>
