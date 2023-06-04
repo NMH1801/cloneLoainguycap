@@ -1,0 +1,37 @@
+.buttonUser {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(175, 224, 175);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.styledIcon {
+  font-size: 30px;
+}
+
+.containerUser {
+  padding: 20px;
+}
+
+.inputUser {
+  width: 100%;
+  margin-right: 10px;
+}
+
+/* .inputUser.ant-input-affix-wrapper:hover, .inputUser.ant-input-affix-wrapper:focus {
+  border-color: red !important;
+  z-index: 3;
+}
+.inputUser.ant-input-affix-wrapper:hover{
+    border:none !important;
+    box-shadow: none;
+    z-index:2 ;
+} */
+
+.right {
+  float: right;
+}

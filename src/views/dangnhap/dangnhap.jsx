@@ -52,7 +52,6 @@ function Footer() {
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(true);
   const [message, setMessage] = useState("");
@@ -73,7 +72,7 @@ const LoginForm = () => {
       console.log(response.data);
       setLoading(false);
       localStorage.setItem("jwtToken", response.data.access_token);
-      navigate("/admin");
+      navigate("/hethong/nguoidung");
       // Xử lý dữ liệu phản hồi ở đây
     } catch (error) {
       setMessage(error.response.data.message);

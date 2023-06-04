@@ -1,45 +1,12 @@
 import { MenuOutlined } from "@ant-design/icons";
-import { Button, theme, Row, Space, Col, Popover, Layout, Menu } from "antd";
-import nguoidungCss from "./header.module.css";
-import { useState } from "react";
+import { Button, theme, Row, Space, Col, Popover } from "antd";
+import nguoidungCss from "../../views/admin/header.module.css";
 import logoImage from "../../assets/logo.png";
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Header } from "antd/es/layout/layout";
-import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
-import { BsController, BsSortDownAlt, BsPen } from 'react-icons/bs';
-import { AiFillPlusCircle, AiFillDelete, AiFillInfoCircle } from "react-icons/ai"
-
-import { GiSheep } from 'react-icons/gi';
-import { UserOutlined } from '@ant-design/icons';
-const { Sider, Content } = Layout;
-function getItem(label, key, icon, link, children, type) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-    // link,
-  };
-}
-export const HeaderUser = () => {
-  const items = [
-    getItem('Bảng điều khiển', '1', <BsController />, '/bang-dieu-khien'),
-    getItem('Quản lý người dùng', '2', <UserOutlined />, '/he-thong/nguoi-dung'),
-    getItem('Phân loại học', '3', <BsSortDownAlt />, '/phan-loai-hoc'),
-    getItem('Loài nguy cấp quý hiếm', '4', <GiSheep />, '/loai'),
-    getItem('Bài viết', '5', <BsPen />, 'bai-viet'),
-    getItem('Phiếu đề xuất', 'sub1', <MailOutlined />, '', [
-      getItem('Đưa loài vào', '6', <AiFillPlusCircle />, "/phieu-de-xuat/dua-loai-vao/"),
-      getItem('Đưa loài ra', '7', <AiFillDelete />, "/phieu-de-xuat/dua-loai-ra/"),
-      getItem('Phiếu thông tin', '8', <AiFillInfoCircle />, "/phieu-de-xuat/phieu-cung-cap-thong-tin/"),
-    ]),
-    getItem('Danh mục', 'sub2', <AppstoreOutlined />, '', [
-      getItem('Danh mục tĩnh', '9', <AiFillPlusCircle />, "/danh-muc/danh-muc-tinh/"),
-      getItem('Danh mục động', '10', <AiFillDelete />, "/danh-muc/danh-muc-dong"),
-    ]),
-  ];
-  const [collapsed, setCollapsed] = useState(false);
+export const HeaderAdmin = ({props}) => {
+  const setCollapsed = props.setCollapsed;
+  const collapsed = props.collapsed;
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -69,8 +36,10 @@ export const HeaderUser = () => {
           Hồ sơ
         </Link>
         <Link
+          to="./dang-nhap"
           className={nguoidungCss.popperBottomText}
           style={{ color: "red" }}
+          onclick={() => {}}
         >
           Đăng xuất
         </Link>
@@ -78,12 +47,11 @@ export const HeaderUser = () => {
     </>
   );
   return (
-    <Layout>
       <Header
         style={{
           padding: "0px 16px",
           background: colorBgContainer,
-          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
+          boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
           zIndex: 100,
         }}
       >
@@ -102,7 +70,10 @@ export const HeaderUser = () => {
                   alignItems: "center",
                 }}
               />
-              <Link to="/index" style={{ display: "flex", alignItems: "center" }}>
+              <Link
+                to="/index"
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 <img src={logoImage} alt="Logo" style={{ height: "40px" }} />
               </Link>
               <h1
@@ -145,42 +116,5 @@ export const HeaderUser = () => {
           </Col>
         </Row>
       </Header>
-      <Layout>
-        <Sider
-          style={{
-            minHeight: '100vh', backgroundColor: 'white', borderRight: "1px solid #e8e8e8",
-            boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)"
-          }}
-          width={240}
-          trigger={null}
-          collapsible
-          collapsed={collapsed}
-          className="fixed-sider"
-        >
-          <div className="logo" />
-          <Menu
-            defaultSelectedKeys={['1']}
-            defaultOpenKeys={['sub1']}
-            mode="inline"
-            // inlineCollapsed={collapsed}
-            items={items.map(item => ({
-              ...item,
-              label: (
-                <Link to={item.link}>{item.label}</Link>
-              ),
-            }))}
-          />
-        </Sider>
-
-        <Content
-          style={{
-            padding: 24,
-            minHeight: 280,
-          }}
-        >
-          <Outlet/>
-        </Content>
-      </Layout>
-    </Layout>
   );
 };

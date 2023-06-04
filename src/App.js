@@ -1,7 +1,7 @@
 import { DataProvider } from "./context/DataContext";
-import Footer from "./views/footer/footer";
-import Header from "./views/header/header";
-import { MainSearchV2 } from "./layout/search/main/mainSearchv2";
+import Footer from "./layout/search/footer/footer";
+import Header from "./layout/search/header/header";
+import { MainSearchV2 } from "./views/search/main/mainSearchv2";
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -9,36 +9,37 @@ import {
   Routes,
   Outlet,
 } from "react-router-dom";
-import { Tintuc } from "./layout/tintuc/tintuc";
-import { Login } from "./layout/dangnhap/dangnhap";
+import { Tintuc } from "./views/tintuc/tintuc";
+import { Login } from "./views/dangnhap/dangnhap";
 import { Test } from "./Test";
-import { Admin } from "./layout/admin/admin";
-import { LoginProvider } from "./context/loginContext";
-import { HeaderUser } from "./layout/admin/header";
-import { Nguoidung } from "./layout/admin/user";
+// import { LoginProvider } from "./context/authContext";
+import { Nguoidung } from "./views/admin/user";
+import { PrivateRoute } from "./views/dangnhap/privateRoute";
+import { AuthProvider } from "./context/authContext";
+import { AdminControl } from "./views/admin/adminControl";
 function App() {
   return (
     <div>
       <Router>
-        <LoginProvider>
-          <Routes>
-            <Route path="/dang-nhap" element={<Login />} />
-            <Route path="/admin" element={<Admin />} />
-            {/* <Route path="hethong/nguoidung" element={<HeaderUser/>}/> */}
+        <Routes>
+          <Route path="/dang-nhap" element={<Login />} />
 
-            <Route path="/" element={<OutletHeaderFooter />}>
-              <Route path="/search" element={<MainSearchV2 />} />
-              <Route path="/tintuc" element={<Tintuc />} />
-            </Route>
-            <Route path="/" element={<OutletAdmin/>}>
-              <Route path="/hethong/nguoidung" element={<Nguoidung/>}></Route>
+
+          <Route path="/" element={<OutletHeaderFooter />}>
+            <Route path="/search" element={<MainSearchV2 />} />
+            <Route path="/tintuc" element={<Tintuc />} />
+          </Route>
+
+          <Route path="/" element={<OutletAdmin />}>
+            <Route path="/" element={<PrivateRoute />}>
+              <Route path="/hethong/nguoidung" element={<Nguoidung />}></Route>
             </Route>
 
-            <Route path="/" element={<Index />} />
-            <Route path="/test" element={<Test />} />
-            <Route path="/*" element={<NotFound />} />
-          </Routes>
-        </LoginProvider>
+          </Route>
+                      <Route path="test" element={<Test />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
       </Router>
     </div>
   );
@@ -56,13 +57,16 @@ function OutletHeaderFooter() {
   );
 }
 
-function OutletAdmin(){
+function OutletAdmin() {
   return (
-    <>
-      <HeaderUser/>
-    </>
-  )
+    <div>
+      <AuthProvider>
+          <AdminControl />
+      </AuthProvider>
+    </div>
+  );
 }
+
 function Index() {
   return <h1>Trang chủ</h1>;
 }

@@ -2,7 +2,7 @@ import { GrSearch } from "react-icons/gr";
 import { FaBars } from "react-icons/fa";
 import "./header.css";
 import { useContext, useState, memo } from "react";
-import { DataContext } from "../../context/DataContext";
+import { DataContext } from "../../../context/DataContext";
 import { Link } from "react-router-dom";
 const HeaderRender = memo((props) => {
   console.log("renderHeader");
