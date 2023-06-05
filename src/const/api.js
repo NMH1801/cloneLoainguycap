@@ -6,6 +6,9 @@ const routerObject = {
     iucn:"danhmuccha?ma_danh_mucs[]=IUCN",
     provinces:"provinces",
     user:"users?paginate=true&page=1&perpage=10&with=roles,createdBy,provinces",
+    roles:"roles",
+    me:"me",
+    userpost:"users",
 }
 
 function getRoute(param, filter) {

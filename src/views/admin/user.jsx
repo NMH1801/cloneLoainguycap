@@ -1,191 +1,76 @@
-import { FaUser } from "react-icons/fa";
+import { FaPen, FaRegTrashAlt, FaUser, FaUserLock } from "react-icons/fa";
 import "./user.css";
-import { Button, Col, Input, Row, Space, Switch, Table } from "antd";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Switch,
+  Table,
+  Tag,
+  Checkbox,
+} from "antd";
+import { useContext, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
-import {SearchOutlined} from "@ant-design/icons"
+import {
+  SearchOutlined,
+  UserOutlined,
+  LockOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import getRoute from "../../const/api";
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    phoneNumber: "0935132641",
-    status: true,
-    tags: "tag1",
-    timeCreate: "2023-05-31",
-  },
-  {
-    key: "2",
-    name: "Jim Green",
-    phoneNumber: "0987654321",
-    status: false,
-    tags: "tag2",
-    timeCreate: "2023-05-30",
-  },
-  {
-    key: "3",
-    name: "Joe Black",
-    phoneNumber: "0123456789",
-    status: true,
-    tags: "tag3",
-    timeCreate: "2023-05-29",
-  },
-  {
-    key: "4",
-    name: "Emily Smith",
-    phoneNumber: "0765432198",
-    status: false,
-    tags: "tag4",
-    timeCreate: "2023-05-28",
-  },
-  {
-    key: "5",
-    name: "Michael Johnson",
-    phoneNumber: "0943216789",
-    status: true,
-    tags: "tag5",
-    timeCreate: "2023-05-27",
-  },
-  {
-    key: "6",
-    name: "Sophia Wilson",
-    phoneNumber: "0823456712",
-    status: false,
-    tags: "tag6",
-    timeCreate: "2023-05-26",
-  },
-  {
-    key: "7",
-    name: "William Brown",
-    phoneNumber: "0976543210",
-    status: true,
-    tags: "tag7",
-    timeCreate: "2023-05-25",
-  },
-  {
-    key: "8",
-    name: "Olivia Davis",
-    phoneNumber: "0912345678",
-    status: false,
-    tags: "tag8",
-    timeCreate: "2023-05-24",
-  },
-  {
-    key: "9",
-    name: "James Taylor",
-    phoneNumber: "0856789432",
-    status: true,
-    tags: "tag9",
-    timeCreate: "2023-05-23",
-  },
-  {
-    key: "10",
-    name: "Emma Anderson",
-    phoneNumber: "0998765432",
-    status: false,
-    tags: "tag10",
-    timeCreate: "2023-05-22",
-  },
-  {
-    key: "11",
-    name: "Noah Clark",
-    phoneNumber: "0965432178",
-    status: true,
-    tags: "tag11",
-    timeCreate: "2023-05-21",
-  },
-  {
-    key: "12",
-    name: "Ava Thomas",
-    phoneNumber: "0876543219",
-    status: false,
-    tags: "tag12",
-    timeCreate: "2023-05-20",
-  },
-  {
-    key: "13",
-    name: "Liam Martin",
-    phoneNumber: "0923456718",
-    status: true,
-    tags: "tag13",
-    timeCreate: "2023-05-19",
-  },
-  {
-    key: "14",
-    name: "Isabella Garcia",
-    phoneNumber: "0843216756",
-    status: false,
-    tags: "tag14",
-    timeCreate: "2023-05-18",
-  },
-  {
-    key: "15",
-    name: "Mason Rodriguez",
-    phoneNumber: "0932145678",
-    status: true,
-    tags: "tag15",
-    timeCreate: "2023-05-17",
-  },
-  {
-    key: "16",
-    name: "Sophia Lopez",
-    phoneNumber: "0887654321",
-    status: false,
-    tags: "tag16",
-    timeCreate: "2023-05-16",
-  },
-  {
-    key: "17",
-    name: "Elijah Martinez",
-    phoneNumber: "0954321768",
-    status: true,
-    tags: "tag17",
-    timeCreate: "2023-05-15",
-  },
-  {
-    key: "18",
-    name: "Charlotte Hernandez",
-    phoneNumber: "0865432179",
-    status: false,
-    tags: "tag18",
-    timeCreate: "2023-05-14",
-  },
-  {
-    key: "19",
-    name: "Ethan Thompson",
-    phoneNumber: "0912345678",
-    status: true,
-    tags: "tag19",
-    timeCreate: "2023-05-13",
-  },
-  {
-    key: "20",
-    name: "Amelia Lewis",
-    phoneNumber: "0823456719",
-    status: false,
-    tags: "tag20",
-    timeCreate: "2023-05-12",
-  },
-  {
-    key: "21",
-    name: "Ethan Thompson",
-    phoneNumber: "0912345678",
-    status: true,
-    tags: "tag19",
-    timeCreate: "2023-05-13",
-  },
-  {
-    key: "22",
-    name: "Amelia Lewis",
-    phoneNumber: "0823456719",
-    status: false,
-    tags: "tag20",
-    timeCreate: "2023-05-12",
-  },
-];
+import { getDataAuth } from "../../ultis/getDataFromApi";
+import { AuthContext } from "../../context/authContext";
+import { postData } from "../../ultis/postData";
 
 export const Nguoidung = () => {
-  const [tableData, setTableData] = useState(data);
+  const { user } = useContext(AuthContext);
+  const [tableData, setTableData] = useState([]);
+  const [isRolesLoaded, setRolesLoaded] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeForm, setActiveForm] = useState("add");
+  const showModal = (method) => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleFormSubmit = (values) => {
+    console.log("Received values:", values);
+    postData(values);
+    setIsModalOpen(false); // Đóng Modal sau khi đăng ký thành công
+  };
+
+  useEffect(() => {
+    const getRoles = async () => {
+      try {
+        const newData = [];
+        const Data = await getDataAuth("roles");
+        Data.data.forEach((item) => {
+          newData.push({
+            id: item.id,
+            name: item.name,
+            color: item.meta.color,
+            textColor: item.meta["text-color"],
+          });
+        });
+        setRoles(newData);
+        setRolesLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (!isRolesLoaded) {
+      getRoles();
+    }
+  }, [isRolesLoaded]);
   const columns = [
     {
       title: "Tên hiển thị",
@@ -226,7 +111,26 @@ export const Nguoidung = () => {
     {
       title: "Quyền",
       dataIndex: "tags",
+      render: (_, { tags }) => {
+        const tagColors = getTagColors(tags, roles);
+
+        return (
+          <>
+            {tagColors.map((tagColor) => (
+              <Tag
+                className="myTag"
+                color={tagColor.color}
+                key={tagColor.id}
+                style={{ color: tagColor.textColor }}
+              >
+                {tagColor.name}
+              </Tag>
+            ))}
+          </>
+        );
+      },
     },
+
     {
       title: "Ngày tạo",
       dataIndex: "timeCreate",
@@ -234,6 +138,18 @@ export const Nguoidung = () => {
     {
       title: "Hành động",
       dataIndex: "action",
+      render: (_, record) => (
+        <>
+          <Button type="link" icon={<FaUserLock />} className="grey" />
+          <Button
+            type="link"
+            icon={<FaPen />}
+            className="red"
+            onClick={() => showModal(record)}
+          />
+          <Button type="link" icon={<FaRegTrashAlt />} className="red" />
+        </>
+      ),
     },
   ];
   const handleStatusChange = (record) => {
@@ -248,46 +164,36 @@ export const Nguoidung = () => {
     });
     setTableData(updatedData);
   };
-  // const handleInputFocus = (e) => {
-  //   const searchIcon = e.target.previousSibling;
-  //   searchIcon.style.color = 'red';
-  //   e.target.style.border = "red";
-  // };
-
-  // const handleInputBlur = (e) => {
-  //   const searchIcon = e.target.previousSibling;
-  //   searchIcon.style.color = '';
-  // }
   useEffect(() => {
-    const newData=[];
     const fetchData = async () => {
       try {
+        const newData = [];
         const response = await fetch(getRoute("user"));
         const Data = await response.json();
         Data.list.forEach((item, key) => {
-          let inactive = true;
-          if (item.inactive!= null ){
-            inactive = item.inactive;
+          const roles = [];
+          let inactive = false;
+          item.roles.forEach((itemrole) => {
+            roles.push(itemrole.id);
+          });
+          if (item.inactive != null) {
+            inactive = !item.inactive;
           }
           newData.push({
-            key:key,
+            key: key,
             name: item.name,
             username: item.username,
             phoneNumber: item.mobile,
-            status:inactive,
-            tags: item.role,
-            timeCreate:item.created_at,
-          })
-
+            status: inactive,
+            tags: roles,
+            timeCreate: item.created_at,
+          });
         });
         setTableData(newData);
       } catch (error) {
         console.log(error);
       }
     };
-
-    console.log(newData);
-    // console.log(Data);
     fetchData();
   }, []);
   return (
@@ -306,23 +212,150 @@ export const Nguoidung = () => {
       <br />
       <Row>
         <Col span={16}>
-    <Input placeholder="Tìm kiếm theo tên hoặc số điện thoại" size="large"
-    className="inputUser"
-    // onFocus={handleInputFocus}
-    // onBlur={handleInputBlur}
-    prefix={
-      <SearchOutlined className=".redButton" />
-    }
-  />
+          <Input
+            placeholder="Tìm kiếm theo tên hoặc số điện thoại"
+            size="large"
+            className="inputUser"
+            prefix={<SearchOutlined className=".redButton" />}
+          />
         </Col>
         <Col span={8}>
-          <Button className="right" size="large">
+          <Button
+            className="right"
+            size="large"
+            onClick={() => {
+              showModal(true);
+              setActiveForm("add");
+            }}
+          >
             Thêm mới
           </Button>
         </Col>
       </Row>
-      <br/>
-      <Table columns={columns} dataSource={tableData} />
+      <br />
+      <Table
+        columns={columns}
+        dataSource={tableData}
+        rowClassName="myRow"
+        pagination={{
+          pageSize: 5,
+        }}
+      />
+      <Modal
+        title={isModalOpen ? "Thêm mới" : "Sửa"}
+        open={isModalOpen} // Thay đổi visible thành open
+        onCancel={handleModalClose}
+        footer={null}
+      >
+        <CreatePopupForm onFinish={handleFormSubmit} roles={roles} />
+      </Modal>
     </Content>
+  );
+};
+
+const getTagColors = (tags, roles) => {
+  const tagColors = [];
+  tags.forEach((tag) => {
+    const role = roles.find((role) => role.id === tag);
+
+    if (role) {
+      tagColors.push({
+        id: role.id,
+        color: role.color,
+        textColor: role.textColor,
+        name: role.name,
+      });
+    }
+  });
+
+  return tagColors;
+};
+
+const CreatePopupForm = ({ onFinish, roles }) => {
+  return (
+    <Form onFinish={onFinish} roles={roles}>
+      <Form.Item
+        name="name"
+        rules={[
+          { required: true, message: "Tên hiển thị không được bỏ trống" },
+        ]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="Tên hiển thị" />
+      </Form.Item>
+      <Form.Item
+        name="username"
+        rules={[
+          { required: true, message: "Tên đăng nhập không được bỏ trống" },
+        ]}
+      >
+        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
+      </Form.Item>
+      <Form.Item
+        name="email"
+        rules={[
+          { required: true, message: "Email không được bỏ trống" },
+          { type: "email", message: "Email không hợp lệ" },
+        ]}
+      >
+        <Input prefix={<MailOutlined />} placeholder="E-Mail" />
+      </Form.Item>
+      <Form.Item name="phone">
+        <Input prefix={<UserOutlined />} placeholder="Điện thoại" />
+      </Form.Item>
+      <Form.Item
+        name="password"
+        rules={[
+          { required: true, message: "Mật khẩu không được bỏ trống" },
+          { min: 8, message: "Mật khẩu phải có ít nhất 8 kí tự" },
+        ]}
+      >
+        <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+      </Form.Item>
+      <Form.Item
+        name="confirmPassword"
+        rules={[
+          { required: true, message: "Vui lòng xác nhận mật khẩu" },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject("Mật khẩu xác nhận không khớp");
+            },
+          }),
+        ]}
+      >
+        <Input.Password
+          prefix={<LockOutlined />}
+          placeholder="Mật khẩu xác nhận"
+        />
+      </Form.Item>
+      <Form.Item
+        name="role_ids"
+        rules={[
+          { required: true, message: "Quyền người dùng không được để trống" },
+        ]}
+      >
+        <Checkbox.Group>
+          {roles.map((item) => (
+            <Checkbox key={item.id} value={item.id}>
+              <Tag
+                className="myTag"
+                color={item.color}
+                key={item.id}
+                style={{ color: item.textColor }}
+              >
+                {item.name}
+              </Tag>
+            </Checkbox>
+          ))}
+        </Checkbox.Group>
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit">
+          Đăng ký
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };

@@ -4,7 +4,7 @@ import {
   AiOutlineArrowDown,
   AiOutlineArrowRight,
 } from "react-icons/ai";
-import getDataFromApi from "../../../components/getDataFromApi";
+import {getDataFromApi} from "../../../ultis/getDataFromApi";
 import React, {
   useContext,
   useEffect,
