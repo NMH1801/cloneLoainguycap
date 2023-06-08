@@ -27,26 +27,14 @@ import { AuthContext } from "../../context/authContext";
 import { postData } from "../../ultis/postData";
 
 export const Nguoidung = () => {
-  const { user } = useContext(AuthContext);
+  // const { user } = useContext(AuthContext);
   const [tableData, setTableData] = useState([]);
   const [isRolesLoaded, setRolesLoaded] = useState(false);
   const [roles, setRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeForm, setActiveForm] = useState("add");
-  const showModal = (method) => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleFormSubmit = (values) => {
-    console.log("Received values:", values);
-    postData(values);
-    setIsModalOpen(false); // Đóng Modal sau khi đăng ký thành công
-  };
-
+  const [record, setRecord] = useState();
+  const [test,setTest] = useState(1);
   useEffect(() => {
     const getRoles = async () => {
       try {
@@ -71,6 +59,21 @@ export const Nguoidung = () => {
       getRoles();
     }
   }, [isRolesLoaded]);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleFormSubmit = (values) => {
+    console.log("Received values:", values);
+    postData(values);
+    setIsModalOpen(false); // Đóng Modal sau khi đăng ký thành công
+  };
+
   const columns = [
     {
       title: "Tên hiển thị",
@@ -92,6 +95,7 @@ export const Nguoidung = () => {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
     },
+    { title: "Email", dataIndex: "email", visible: "none" },
     {
       title: "Trạng thái",
       dataIndex: "status",
@@ -139,16 +143,21 @@ export const Nguoidung = () => {
       title: "Hành động",
       dataIndex: "action",
       render: (_, record) => (
-        <>
+        <Space size="small" className="action-buttons">
           <Button type="link" icon={<FaUserLock />} className="grey" />
           <Button
             type="link"
             icon={<FaPen />}
             className="red"
-            onClick={() => showModal(record)}
+            onClick={() => {
+              // setRecord(record);
+              setTest(record.key);
+              setActiveForm("edit");
+              showModal();
+            }}
           />
           <Button type="link" icon={<FaRegTrashAlt />} className="red" />
-        </>
+        </Space>
       ),
     },
   ];
@@ -224,8 +233,14 @@ export const Nguoidung = () => {
             className="right"
             size="large"
             onClick={() => {
-              showModal(true);
               setActiveForm("add");
+              setRecord({
+                name: "",
+                username: "",
+                phoneNumber: "",
+                roles_id: "",
+              });
+              showModal();
             }}
           >
             Thêm mới
@@ -233,21 +248,28 @@ export const Nguoidung = () => {
         </Col>
       </Row>
       <br />
-      <Table
-        columns={columns}
-        dataSource={tableData}
-        rowClassName="myRow"
-        pagination={{
-          pageSize: 5,
-        }}
-      />
+      <div className="table-responsive">
+        <Table
+          columns={columns}
+          dataSource={tableData}
+          rowClassName="myRow"
+          pagination={{
+            pageSize: 5,
+          }}
+        />
+      </div>
       <Modal
         title={isModalOpen ? "Thêm mới" : "Sửa"}
-        open={isModalOpen} // Thay đổi visible thành open
+        open={isModalOpen}
         onCancel={handleModalClose}
         footer={null}
       >
-        <CreatePopupForm onFinish={handleFormSubmit} roles={roles} />
+        <CreatePopupForm
+          onFinish={handleFormSubmit}
+          roles={roles}
+          record={record}
+          activeForm={activeForm}
+        />
       </Modal>
     </Content>
   );
@@ -271,16 +293,22 @@ const getTagColors = (tags, roles) => {
   return tagColors;
 };
 
-const CreatePopupForm = ({ onFinish, roles }) => {
+const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
+  console.log(activeForm, record);
   return (
-    <Form onFinish={onFinish} roles={roles}>
+    <Form>
       <Form.Item
         name="name"
         rules={[
           { required: true, message: "Tên hiển thị không được bỏ trống" },
         ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Tên hiển thị" />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Tên hiển thị"
+          // value={record.name}
+          value={test}
+        ></Input>
       </Form.Item>
       <Form.Item
         name="username"
@@ -288,7 +316,7 @@ const CreatePopupForm = ({ onFinish, roles }) => {
           { required: true, message: "Tên đăng nhập không được bỏ trống" },
         ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" />
+        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled />
       </Form.Item>
       <Form.Item
         name="email"
@@ -302,34 +330,39 @@ const CreatePopupForm = ({ onFinish, roles }) => {
       <Form.Item name="phone">
         <Input prefix={<UserOutlined />} placeholder="Điện thoại" />
       </Form.Item>
-      <Form.Item
-        name="password"
-        rules={[
-          { required: true, message: "Mật khẩu không được bỏ trống" },
-          { min: 8, message: "Mật khẩu phải có ít nhất 8 kí tự" },
-        ]}
-      >
-        <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
-      </Form.Item>
-      <Form.Item
-        name="confirmPassword"
-        rules={[
-          { required: true, message: "Vui lòng xác nhận mật khẩu" },
-          ({ getFieldValue }) => ({
-            validator(_, value) {
-              if (!value || getFieldValue("password") === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject("Mật khẩu xác nhận không khớp");
-            },
-          }),
-        ]}
-      >
-        <Input.Password
-          prefix={<LockOutlined />}
-          placeholder="Mật khẩu xác nhận"
-        />
-      </Form.Item>
+      {activeForm === "add" && (
+        <>
+          <Form.Item
+            name="password"
+            rules={[
+              { required: true, message: "Mật khẩu không được bỏ trống" },
+              { min: 8, message: "Mật khẩu phải có ít nhất 8 kí tự" },
+            ]}
+          >
+            <Input.Password prefix={<LockOutlined />} placeholder="Mật khẩu" />
+          </Form.Item>
+          <Form.Item
+            name="confirmPassword"
+            rules={[
+              { required: true, message: "Vui lòng xác nhận mật khẩu" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject("Mật khẩu xác nhận không khớp");
+                },
+              }),
+            ]}
+          >
+            <Input.Password
+              prefix={<LockOutlined />}
+              placeholder="Mật khẩu xác nhận"
+            />
+          </Form.Item>
+        </>
+      )}
+
       <Form.Item
         name="role_ids"
         rules={[
