@@ -265,9 +265,9 @@ export const Nguoidung = () => {
         const response = await fetch(getRoute("user"));
         const Data = await response.json();
         Data.list.forEach((item, key) => {
-          let inactive = true;
+          let inactive = false;
           if (item.inactive!= null ){
-            inactive = item.inactive;
+            inactive = !item.inactive;
           }
           newData.push({
             key:key,
