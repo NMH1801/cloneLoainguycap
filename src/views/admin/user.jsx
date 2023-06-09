@@ -210,6 +210,7 @@ export const Nguoidung = () => {
     };
     fetchData();
   }, []);
+  console.log("header");
   return (
     <Content className="containerUser">
       <Row align="middle">
@@ -278,6 +279,7 @@ export const Nguoidung = () => {
       </Modal>
     </Content>
   );
+
 };
 
 const getTagColors = (tags, roles) => {
