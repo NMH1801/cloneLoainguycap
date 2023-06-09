@@ -6,7 +6,6 @@ import { Layout } from "antd";
 
 export const AdminControl = () =>{
     const [collapsed, setCollapsed] = useState(false);
-    console.log(collapsed);
     return (
         <Layout>
         <HeaderAdmin  props={{ setCollapsed, collapsed }}/>

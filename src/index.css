@@ -9,10 +9,10 @@ body {
   height: 100%;
 }
 
-code {
+/* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
-}
+} */
 
 li{
   list-style-type: none;

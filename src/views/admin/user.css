@@ -22,16 +22,19 @@
   margin-right: 10px;
 }
 
-/* .inputUser.ant-input-affix-wrapper:hover, .inputUser.ant-input-affix-wrapper:focus {
-  border-color: red !important;
-  z-index: 3;
+.myRow{
+  font-size:16px;
 }
-.inputUser.ant-input-affix-wrapper:hover{
-    border:none !important;
-    box-shadow: none;
-    z-index:2 ;
-} */
-
 .right {
   float: right;
+}
+.myTag {
+  font-size: 16px;
+}
+
+.red{
+  color:red;
+}
+.grey{
+  color:grey;
 }
