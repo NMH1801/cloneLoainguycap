@@ -25,16 +25,16 @@ import getRoute from "../../const/api";
 import { getDataAuth } from "../../ultis/getDataFromApi";
 import { AuthContext } from "../../context/authContext";
 import { postData } from "../../ultis/postData";
+import { putData } from "../../ultis/putData";
 
 export const Nguoidung = () => {
-  // const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
   const [tableData, setTableData] = useState([]);
   const [isRolesLoaded, setRolesLoaded] = useState(false);
   const [roles, setRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeForm, setActiveForm] = useState("add");
   const [record, setRecord] = useState();
-  const [test,setTest] = useState(1);
   useEffect(() => {
     const getRoles = async () => {
       try {
@@ -68,16 +68,15 @@ export const Nguoidung = () => {
     setIsModalOpen(false);
   };
 
-  const handleFormSubmit = (values) => {
-    console.log("Received values:", values);
-    postData(values);
-    setIsModalOpen(false); // Đóng Modal sau khi đăng ký thành công
-  };
-
   const columns = [
+    // {
+    //   dataIndex:"key",
+    //   visible:false,
+    // },
     {
       title: "Tên hiển thị",
       dataIndex: "name",
+      visible:true,
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
         multiple: 3,
@@ -86,6 +85,7 @@ export const Nguoidung = () => {
     {
       title: "Tên đăng nhập",
       dataIndex: "username",
+      visible:true,
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
         multiple: 3,
@@ -94,11 +94,13 @@ export const Nguoidung = () => {
     {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
+      visible:true,
     },
-    { title: "Email", dataIndex: "email", visible: "none" },
+    { title: "Email", dataIndex: "email", visible:false },
     {
       title: "Trạng thái",
       dataIndex: "status",
+      visible:true,
       sorter: {
         compare: (a, b) => a.english - b.english,
         multiple: 1,
@@ -115,6 +117,7 @@ export const Nguoidung = () => {
     {
       title: "Quyền",
       dataIndex: "tags",
+      visible:true,
       render: (_, { tags }) => {
         const tagColors = getTagColors(tags, roles);
 
@@ -138,10 +141,12 @@ export const Nguoidung = () => {
     {
       title: "Ngày tạo",
       dataIndex: "timeCreate",
+      visible:true,
     },
     {
       title: "Hành động",
       dataIndex: "action",
+      visible:true,
       render: (_, record) => (
         <Space size="small" className="action-buttons">
           <Button type="link" icon={<FaUserLock />} className="grey" />
@@ -150,8 +155,7 @@ export const Nguoidung = () => {
             icon={<FaPen />}
             className="red"
             onClick={() => {
-              // setRecord(record);
-              setTest(record.key);
+              setRecord(record);
               setActiveForm("edit");
               showModal();
             }}
@@ -189,13 +193,14 @@ export const Nguoidung = () => {
             inactive = !item.inactive;
           }
           newData.push({
-            key: key,
+            key: item.id,
             name: item.name,
             username: item.username,
             phoneNumber: item.mobile,
             status: inactive,
             tags: roles,
             timeCreate: item.created_at,
+            email: item.email,
           });
         });
         setTableData(newData);
@@ -250,9 +255,9 @@ export const Nguoidung = () => {
       <br />
       <div className="table-responsive">
         <Table
-          columns={columns}
+          columns={columns.filter((column) => column.visible)}
           dataSource={tableData}
-          rowClassName="myRow"
+          rowClassName="myRow"  
           pagination={{
             pageSize: 5,
           }}
@@ -265,10 +270,10 @@ export const Nguoidung = () => {
         footer={null}
       >
         <CreatePopupForm
-          onFinish={handleFormSubmit}
           roles={roles}
           record={record}
           activeForm={activeForm}
+          handleModalClose={handleModalClose}
         />
       </Modal>
     </Content>
@@ -295,8 +300,30 @@ const getTagColors = (tags, roles) => {
 
 const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
   console.log(activeForm, record);
+  const disabled = true;
+  const [form] = Form.useForm();
+  useEffect(() => {
+    form.setFieldsValue({
+      name:record.name,
+      username:record.username,
+      email:record.email,
+      phone: record.phone,
+      role_ids:record.tags,
+    });
+  }, [record, form]);
+  onFinish =(values) =>{
+    if(activeForm==="add"){
+      postData(values);
+    }
+    else{
+      values.khubaoton=[];
+      values.id = record.key;
+      console.log(values);
+      putData(values);
+    }
+  }
   return (
-    <Form>
+    <Form  form={form} onFinish={onFinish}>
       <Form.Item
         name="name"
         rules={[
@@ -316,7 +343,7 @@ const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
           { required: true, message: "Tên đăng nhập không được bỏ trống" },
         ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled />
+        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled={activeForm === "edit" ? disabled : false} />
       </Form.Item>
       <Form.Item
         name="email"
