@@ -30,6 +30,7 @@ import { putData } from "../../ultis/putData";
 export const Nguoidung = () => {
   const { user } = useContext(AuthContext);
   const [tableData, setTableData] = useState([]);
+  const [total, setTotal] = useState(0);
   const [isRolesLoaded, setRolesLoaded] = useState(false);
   const [roles, setRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -182,7 +183,9 @@ export const Nguoidung = () => {
       try {
         const newData = [];
         const response = await fetch(getRoute("user"));
+
         const Data = await response.json();
+        setTotal(Data.pagination.total)
         Data.list.forEach((item, key) => {
           const roles = [];
           let inactive = false;
@@ -265,7 +268,7 @@ export const Nguoidung = () => {
         />
       </div>
       <Modal
-        title={isModalOpen ? "Thêm mới" : "Sửa"}
+        title={activeForm==="add" ? "Thêm mới" : "Sửa"}
         open={isModalOpen}
         onCancel={handleModalClose}
         footer={null}
