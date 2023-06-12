@@ -8,5 +8,12 @@ export const PrivateRoute = () => {
   if (isChecking) {
     return <div></div>;
   }
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  console.log(isAuthenticated, isChecking);
+  return isAuthenticated ? <Outlet /> : <Navigate to="/dang-nhap" replace />;
 };
+
+export const NavigateRoute = () =>{
+  const { isAuthenticated} = useContext(AuthContext);
+  console.log(isAuthenticated)
+  return !isAuthenticated ? <Outlet /> : <Navigate to="/hethong/nguoidung" replace />;
+}

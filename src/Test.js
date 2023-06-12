@@ -1,36 +1,26 @@
-import { Table, Select } from 'antd';
-import { useState } from 'react';
-
-const dataSource = [
-  // dữ liệu của bảng
-];
-
-const columns = [
-  // cấu hình cột
-];
+import React, { useState } from 'react';
+import { Input } from 'antd';
 
 export const Test = () => {
-  const [pageSize, setPageSize] = useState(10); // Số lượng hàng trên mỗi trang
+  const [value, setValue] = useState('');
 
-  const handlePageSizeChange = (value) => {
-    setPageSize(value);
+  // Hàm xử lý thay đổi giá trị
+  const handleChange = (event) => {
+    const { value } = event.target;
+    setValue(value);
   };
 
-  return (
-    <div>
-      <Select value={pageSize.toString()} onChange={handlePageSizeChange}>
-        <Select.Option value="10">10</Select.Option>
-        <Select.Option value="20">20</Select.Option>
-        <Select.Option value="30">30</Select.Option>
-      </Select>
+  // Kiểm tra nếu có giá trị được chọn thì sử dụng placeholder trống
+  const placeholder = value ? '' : 'Tìm kiếm theo tên hoặc số điện thoại';
 
-      <Table
-        dataSource={dataSource}
-        columns={columns}
-        pagination={{
-          pageSize: pageSize,
-        }}
-      />
-    </div>
+  return (
+    <Input
+      size="large"
+      className="inputUser"
+      value={value}
+      onChange={handleChange}
+      placeholder={placeholder}
+    />
   );
 };
+

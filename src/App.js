@@ -14,7 +14,7 @@ import { Login } from "./views/dangnhap/dangnhap";
 import { Test } from "./Test";
 // import { LoginProvider } from "./context/authContext";
 import { Nguoidung } from "./views/admin/user";
-import { PrivateRoute } from "./views/dangnhap/privateRoute";
+import { NavigateRoute, PrivateRoute } from "./views/dangnhap/privateRoute";
 import { AuthProvider } from "./context/authContext";
 import { AdminControl } from "./views/admin/adminControl";
 function App() {
@@ -22,21 +22,21 @@ function App() {
     <div>
       <Router>
         <Routes>
-          <Route path="/dang-nhap" element={<Login />} />
-
-
           <Route path="/" element={<OutletHeaderFooter />}>
             <Route path="/search" element={<MainSearchV2 />} />
             <Route path="/tintuc" element={<Tintuc />} />
           </Route>
-
+          <Route path="/" element={<OutletLogin/>}>
+          <Route path="/" element={<NavigateRoute />}>
+              <Route path="/dang-nhap" element={<Login />} />
+            </Route>
+          </Route>
           <Route path="/" element={<OutletAdmin />}>
             <Route path="/" element={<PrivateRoute />}>
               <Route path="/hethong/nguoidung" element={<Nguoidung />}></Route>
             </Route>
-
           </Route>
-                      <Route path="test" element={<Test />} />
+          <Route path="test" element={<Test />} />
           <Route path="/" element={<Index />} />
           <Route path="/*" element={<NotFound />} />
         </Routes>
@@ -61,12 +61,19 @@ function OutletAdmin() {
   return (
     <div>
       <AuthProvider>
-          <AdminControl />
+        <AdminControl />
       </AuthProvider>
     </div>
   );
 }
 
+function OutletLogin(){
+  return (
+    <AuthProvider>
+      <Outlet/>
+    </AuthProvider>
+  )
+}
 function Index() {
   return <h1>Trang chủ</h1>;
 }

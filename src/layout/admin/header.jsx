@@ -2,9 +2,15 @@ import { MenuOutlined } from "@ant-design/icons";
 import { Button, theme, Row, Space, Col, Popover } from "antd";
 import nguoidungCss from "../../views/admin/header.module.css";
 import logoImage from "../../assets/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "antd/es/layout/layout";
+import {logOut} from "../../ultis/postData"
 export const HeaderAdmin = ({props}) => {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logOut(navigate);
+  };
   const setCollapsed = props.setCollapsed;
   const collapsed = props.collapsed;
   const {
@@ -35,14 +41,15 @@ export const HeaderAdmin = ({props}) => {
         >
           Hồ sơ
         </Link>
-        <Link
-          to="./dang-nhap"
+        <Button
+          // to="./dang-nhap"
+          type="text"
           className={nguoidungCss.popperBottomText}
           style={{ color: "red" }}
-          onclick={() => {}}
+          onClick={handleLogout}
         >
           Đăng xuất
-        </Link>
+        </Button>
       </div>
     </>
   );

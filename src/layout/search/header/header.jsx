@@ -29,7 +29,7 @@ const HeaderRender = memo((props) => {
       <div className="topHeader">
 
             {localStorage.getItem("username") ? (
-               <Link to="/admin">
+               <Link to="/nguoidung/hethong">
                <button className="loginButton">
                <span>{localStorage.getItem("username")}</span>
                </button>

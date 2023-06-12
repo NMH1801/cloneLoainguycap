@@ -14,6 +14,8 @@ import {
   Checkbox,
   Pagination,
   Select,
+  Spin,
+  DatePicker,
 } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
@@ -23,14 +25,13 @@ import {
   LockOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import {getRoute} from "../../const/api";
 import { getDataAuth } from "../../ultis/getDataFromApi";
 import { AuthContext } from "../../context/authContext";
 import { postData } from "../../ultis/postData";
 import { putData } from "../../ultis/putData";
+import { debounce } from "lodash";
 
 export const Nguoidung = () => {
-  console.log("render");
   const { user } = useContext(AuthContext);
   const [tableData, setTableData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -39,14 +40,51 @@ export const Nguoidung = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeForm, setActiveForm] = useState("add");
   const [record, setRecord] = useState();
+  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10); // Số lượng hàng trên mỗi trang
+  const [pageSize, setPageSize] = useState(5);
+  const [dateStart, setDateStart] = useState();
+  const [dateEnd, setDateEnd] = useState();
+  const [inactive, setInactive] = useState();
+  const [filterRole, setFilterRole] = useState();
+  const [search, setSearch] = useState();
+  const handleDateStartChange = (date, dateString) => {
+    let convertedDate = dateString.replace(/\//g, "%2F");
+    if(date===null){
+      convertedDate=null;
+    }
+    setDateStart(convertedDate);
+  };
 
+  const handleDateEndChange = (date, dateString) => {
+    let convertedDate = dateString.replace(/\//g, "%2F");
+    if(date===null){
+      convertedDate=null;
+    }
+    setDateEnd(convertedDate);
+  };
+  const handleFilterRoleChange = (value) =>{
+    if(value===undefined){
+      value=null;
+    }
+    setFilterRole(value);
+  }
   const handlePageSizeChange = (value) => {
     setPageSize(value);
   };
-  const handleCurrentPage =(page) =>{
+  const handleCurrentPage = (page) => {
     setCurrentPage(page);
+  };
+  const handleSearch =(value) => {
+    if(value===""){
+      value=null;
+    }
+    setSearch(value);
+  }
+  const handleSearchDebounced = debounce(handleSearch, 500);
+
+  const handleSearchChange= (e) =>{
+    handleSearchDebounced(e.target.value)
   }
   useEffect(() => {
     const getRoles = async () => {
@@ -82,10 +120,6 @@ export const Nguoidung = () => {
   };
 
   const columns = [
-    // {
-    //   dataIndex:"key",
-    //   visible:false,
-    // },
     {
       title: "Tên hiển thị",
       dataIndex: "name",
@@ -122,7 +156,7 @@ export const Nguoidung = () => {
         return (
           <Switch
             checked={status}
-            onChange={() => handleStatusChange(record)}
+            // onChange={() => handleStatusChange(record)}
           />
         );
       },
@@ -178,26 +212,24 @@ export const Nguoidung = () => {
       ),
     },
   ];
-  const handleStatusChange = (record) => {
-    const updatedData = tableData.map((item) => {
-      if (item.key === record.key) {
-        return {
-          ...item,
-          status: !item.status,
-        };
-      }
-      return item;
-    });
-    setTableData(updatedData);
+  const handleStatusFilterChange = (value) => {
+    setInactive(value);
   };
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const newData = [];
-        const response = await getDataAuth("user", [currentPage, pageSize]);
-
+        const response = await getDataAuth("user", [currentPage, pageSize], {
+          inactive: inactive,
+          dateStart: dateStart,
+          dateEnd:dateEnd,
+          filterRole:filterRole,
+          search:search,
+        });
         const Data = await response.data;
-        setTotal(Data.pagination.total)
+        setLoading(false);
+        setTotal(Data.pagination.total);
         Data.list.forEach((item, key) => {
           const roles = [];
           let inactive = false;
@@ -224,7 +256,7 @@ export const Nguoidung = () => {
       }
     };
     fetchData();
-  }, [currentPage, pageSize]);
+  }, [currentPage, pageSize, dateStart, dateEnd, inactive, filterRole, search]);
   return (
     <Content className="containerUser">
       <Row align="middle">
@@ -246,6 +278,7 @@ export const Nguoidung = () => {
             size="large"
             className="inputUser"
             prefix={<SearchOutlined className=".redButton" />}
+            onChange={handleSearchChange}
           />
         </Col>
         <Col span={8}>
@@ -269,102 +302,89 @@ export const Nguoidung = () => {
       </Row>
       <br />
       <Row>
-      <Space>
-    <Select
-      defaultValue="lucy"
+        <Space>
+        <Select
+      defaultValue="null"
       style={{
         width: 120,
       }}
+      onChange={handleStatusFilterChange}
       options={[
         {
-          value: 'jack',
-          label: 'Jack',
+          value: 'false',
+          label: 'Hoạt động',
         },
         {
-          value: 'lucy',
-          label: 'Lucy',
+          value: 'true',
+          label: 'Vô hiệu',
         },
         {
-          value: 'Yiminghe',
-          label: 'yiminghe',
-        },
-        {
-          value: 'disabled',
-          label: 'Disabled',
-          disabled: true,
+          value: 'null',
+          label: 'Toàn bộ',
         },
       ]}
     />
-    <Select
-      defaultValue="lucy"
-      style={{
-        width: 120,
-      }}
-      disabled
-      options={[
-        {
-          value: 'lucy',
-          label: 'Lucy',
-        },
-      ]}
-    />
-    <Select
-      defaultValue="lucy"
-      style={{
-        width: 120,
-      }}
-      loading
-      options={[
-        {
-          value: 'lucy',
-          label: 'Lucy',
-        },
-      ]}
-    />
-    <Select
-      defaultValue="lucy"
-      style={{
-        width: 120,
-      }}
-      allowClear
-      options={[
-        {
-          value: 'lucy',
-          label: 'Lucy',
-        },
-      ]}
-    />
-  </Space>
+          <Select
+            style={{
+              width: 200,
+            }}
+            placeholder="Quyền"
+            allowClear
+            onChange={handleFilterRoleChange}
+          >
+            {roles.map((role) => (
+              <Select.Option key={role.id} value={role.id}>
+                {role.name}
+              </Select.Option>
+            ))}
+          </Select>
+          <DatePicker
+            placeholder="Ngày bắt đầu"
+            format="DD/MM/YYYY"
+            onChange={handleDateStartChange}
+          />
+          <DatePicker
+            placeholder="Ngày kết thúc"
+            format="DD/MM/YYYY"
+            onChange={handleDateEndChange}
+          />
+        </Space>
       </Row>
-      <div className="table-responsive">
-        <Table
-          columns={columns.filter((column) => column.visible)}
-          dataSource={tableData}
-          rowClassName="myRow"
-          pagination={false}
-        />
-      </div>
-      <br />
-      <Row justify="space-between" align="middle">
-  <Col span={8}>
-  <p>{`${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, total)} of ${total} items`}</p>
-  </Col>
-  <Col span={8} style={{ textAlign: 'center' }}>
-    <Pagination
-      current={currentPage}
-      total={total}
-      pageSize={pageSize}
-      onChange={handleCurrentPage}
-    />
-  </Col>
-  <Col span={8} style={{ textAlign: 'right' }}>
-    <Select value={pageSize.toString()} onChange={handlePageSizeChange}>
-      <Select.Option value="5">5</Select.Option>
-      <Select.Option value="10">10</Select.Option>
-      <Select.Option value="25">25</Select.Option>
-    </Select>
-  </Col>
-</Row>
+      <br/>
+      <Spin spinning={loading}>
+        <div className="table-responsive">
+          <Table
+            columns={columns.filter((column) => column.visible)}
+            dataSource={tableData}
+            rowClassName="myRow"
+            pagination={false}
+          />
+        </div>
+        <br />
+        <Row justify="space-between" align="middle">
+          <Col span={8}>
+            <p>{`${(currentPage - 1) * pageSize + 1}-${Math.min(
+              currentPage * pageSize,
+              total
+            )} of ${total} items`}</p>
+          </Col>
+          <Col span={8} style={{ textAlign: "center" }}>
+            <Pagination
+              current={currentPage}
+              total={total}
+              pageSize={pageSize}
+              onChange={handleCurrentPage}
+            />
+          </Col>
+          <Col span={8} style={{ textAlign: "right" }}>
+            <Select value={pageSize.toString()} onChange={handlePageSizeChange}>
+              <Select.Option value="5">5</Select.Option>
+              <Select.Option value="10">10</Select.Option>
+              <Select.Option value="25">25</Select.Option>
+            </Select>
+          </Col>
+        </Row>
+      </Spin>
       <Modal
         title={activeForm === "add" ? "Thêm mới" : "Sửa"}
         open={isModalOpen}
@@ -380,7 +400,6 @@ export const Nguoidung = () => {
       </Modal>
     </Content>
   );
-
 };
 
 const getTagColors = (tags, roles) => {
@@ -401,8 +420,7 @@ const getTagColors = (tags, roles) => {
   return tagColors;
 };
 
-const CreatePopupForm = ({ onFinish, roles, record, activeForm }) => {
-  console.log(activeForm, record);
+const CreatePopupForm = ({ onFinish, roles, record, activeForm, handleModalClose }) => {
   const disabled = true;
   const [form] = Form.useForm();
   useEffect(() => {
@@ -414,17 +432,25 @@ const CreatePopupForm = ({ onFinish, roles, record, activeForm }) => {
       role_ids: record.tags,
     });
   }, [record, form]);
-  onFinish = (values) => {
-    if (activeForm === "add") {
-      postData(values);
+  onFinish = async (values) => {
+    try {
+      if (activeForm === "add") {
+        values.khubaoton = [];
+        await postData(values);
+      } else {
+        values.khubaoton = [];
+        values.id = record.key;
+        await putData(values);
+      }
+      setTimeout(() => {
+        handleModalClose();
+      }, 2000);
+
+     
+    } catch (error) {
+      console.error(error);
     }
-    else {
-      values.khubaoton = [];
-      values.id = record.key;
-      console.log(values);
-      putData(values);
-    }
-  }
+  };
   return (
     <Form form={form} onFinish={onFinish}>
       <Form.Item
@@ -433,10 +459,7 @@ const CreatePopupForm = ({ onFinish, roles, record, activeForm }) => {
           { required: true, message: "Tên hiển thị không được bỏ trống" },
         ]}
       >
-        <Input
-          prefix={<UserOutlined />}
-          placeholder="Tên hiển thị"
-        ></Input>
+        <Input prefix={<UserOutlined />} placeholder="Tên hiển thị"></Input>
       </Form.Item>
       <Form.Item
         name="username"
@@ -444,7 +467,11 @@ const CreatePopupForm = ({ onFinish, roles, record, activeForm }) => {
           { required: true, message: "Tên đăng nhập không được bỏ trống" },
         ]}
       >
-        <Input prefix={<UserOutlined />} placeholder="Tên đăng nhập" disabled={activeForm === "edit" ? disabled : false} />
+        <Input
+          prefix={<UserOutlined />}
+          placeholder="Tên đăng nhập"
+          disabled={activeForm === "edit" ? disabled : false}
+        />
       </Form.Item>
       <Form.Item
         name="email"
