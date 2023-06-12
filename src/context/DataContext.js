@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext } from "react";
 import {getDataFromApi} from "../ultis/getDataFromApi";
-import getRoute from "../const/api";
+import {getRoute} from "../const/api";
 import { debounce } from "lodash";
 
 export const DataContext = createContext({});

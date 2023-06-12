@@ -1,54 +1,36 @@
-import { Button, Form, Input, message, Space } from 'antd';
+import { Table, Select } from 'antd';
+import { useState } from 'react';
+
+const dataSource = [
+  // dữ liệu của bảng
+];
+
+const columns = [
+  // cấu hình cột
+];
+
 export const Test = () => {
-  const [form] = Form.useForm();
-  const onFinish = () => {
-    message.success('Submit success!');
+  const [pageSize, setPageSize] = useState(10); // Số lượng hàng trên mỗi trang
+
+  const handlePageSizeChange = (value) => {
+    setPageSize(value);
   };
-  const onFinishFailed = () => {
-    message.error('Submit failed!');
-  };
-  const onFill = () => {
-    form.setFieldsValue({
-      url: 'https://taobao.com/',
-    });
-  };
+
   return (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-      <Form.Item
-        name="url"
-        label="URL"
-        rules={[
-          {
-            required: true,
-          },
-          {
-            type: 'url',
-            warningOnly: true,
-          },
-          {
-            type: 'string',
-            min: 6,
-          },
-        ]}
-      >
-        <Input placeholder="input placeholder" />
-      </Form.Item>
-      <Form.Item>
-        <Space>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-          <Button htmlType="button" onClick={onFill}>
-            Fill
-          </Button>
-        </Space>
-      </Form.Item>
-    </Form>
+    <div>
+      <Select value={pageSize.toString()} onChange={handlePageSizeChange}>
+        <Select.Option value="10">10</Select.Option>
+        <Select.Option value="20">20</Select.Option>
+        <Select.Option value="30">30</Select.Option>
+      </Select>
+
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        pagination={{
+          pageSize: pageSize,
+        }}
+      />
+    </div>
   );
 };

@@ -1,11 +1,11 @@
-import getRoute from "../const/api";
+import {getRoute, getDataAdmin}   from "../const/api";
 import axios from "axios";
 export const getDataFromApi= async(param, filter) => {
   const response = await fetch(getRoute(param, filter));
   const jsonData = await response.json();
   return jsonData;
 }
-export const getDataAuth = async (param, filter) => {
+export const getDataAuth = async (param, array, filter) => {
   const token=localStorage.getItem("jwtToken");
   const config = {
     headers: {
@@ -13,7 +13,7 @@ export const getDataAuth = async (param, filter) => {
     },
   };
   return axios
-  .get(getRoute(param, filter), config)
+  .get(getDataAdmin(param, array, filter), config)
   .then((res) => {
     return res
   })

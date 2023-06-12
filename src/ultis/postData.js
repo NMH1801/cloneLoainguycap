@@ -1,5 +1,5 @@
 import axios from "axios";
-import getRoute from "../const/api";
+import {getDataAdmin} from "../const/api";
 
 export const postData = async (value) => {
     const token = localStorage.getItem("jwtToken");
@@ -9,7 +9,7 @@ export const postData = async (value) => {
       },
     };
     try {
-      const response = await axios.post(getRoute("userpost"), value, config);
+      const response = await axios.post(getDataAdmin("userpost"), value, config);
       console.log(response.data);
       // Xử lý dữ liệu phản hồi ở đây
     } catch (error) {

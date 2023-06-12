@@ -1,5 +1,5 @@
 import axios from "axios";
-import getRoute from "../const/api";
+import {getRoute} from "../const/api";
 
 export const putData = async (value) => {
     const token = localStorage.getItem("jwtToken");

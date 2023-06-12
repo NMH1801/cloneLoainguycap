@@ -12,6 +12,8 @@ import {
   Table,
   Tag,
   Checkbox,
+  Pagination,
+  Select,
 } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
@@ -21,13 +23,14 @@ import {
   LockOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import getRoute from "../../const/api";
+import {getRoute} from "../../const/api";
 import { getDataAuth } from "../../ultis/getDataFromApi";
 import { AuthContext } from "../../context/authContext";
 import { postData } from "../../ultis/postData";
 import { putData } from "../../ultis/putData";
 
 export const Nguoidung = () => {
+  console.log("render");
   const { user } = useContext(AuthContext);
   const [tableData, setTableData] = useState([]);
   const [total, setTotal] = useState(0);
@@ -36,6 +39,15 @@ export const Nguoidung = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeForm, setActiveForm] = useState("add");
   const [record, setRecord] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10); // Số lượng hàng trên mỗi trang
+
+  const handlePageSizeChange = (value) => {
+    setPageSize(value);
+  };
+  const handleCurrentPage =(page) =>{
+    setCurrentPage(page);
+  }
   useEffect(() => {
     const getRoles = async () => {
       try {
@@ -77,7 +89,7 @@ export const Nguoidung = () => {
     {
       title: "Tên hiển thị",
       dataIndex: "name",
-      visible:true,
+      visible: true,
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
         multiple: 3,
@@ -86,7 +98,7 @@ export const Nguoidung = () => {
     {
       title: "Tên đăng nhập",
       dataIndex: "username",
-      visible:true,
+      visible: true,
       sorter: {
         compare: (a, b) => a.chinese - b.chinese,
         multiple: 3,
@@ -95,13 +107,13 @@ export const Nguoidung = () => {
     {
       title: "Số điện thoại",
       dataIndex: "phoneNumber",
-      visible:true,
+      visible: true,
     },
-    { title: "Email", dataIndex: "email", visible:false },
+    { title: "Email", dataIndex: "email", visible: false },
     {
       title: "Trạng thái",
       dataIndex: "status",
-      visible:true,
+      visible: true,
       sorter: {
         compare: (a, b) => a.english - b.english,
         multiple: 1,
@@ -118,7 +130,7 @@ export const Nguoidung = () => {
     {
       title: "Quyền",
       dataIndex: "tags",
-      visible:true,
+      visible: true,
       render: (_, { tags }) => {
         const tagColors = getTagColors(tags, roles);
 
@@ -142,12 +154,12 @@ export const Nguoidung = () => {
     {
       title: "Ngày tạo",
       dataIndex: "timeCreate",
-      visible:true,
+      visible: true,
     },
     {
       title: "Hành động",
       dataIndex: "action",
-      visible:true,
+      visible: true,
       render: (_, record) => (
         <Space size="small" className="action-buttons">
           <Button type="link" icon={<FaUserLock />} className="grey" />
@@ -182,9 +194,9 @@ export const Nguoidung = () => {
     const fetchData = async () => {
       try {
         const newData = [];
-        const response = await fetch(getRoute("user"));
+        const response = await getDataAuth("user", [currentPage, pageSize]);
 
-        const Data = await response.json();
+        const Data = await response.data;
         setTotal(Data.pagination.total)
         Data.list.forEach((item, key) => {
           const roles = [];
@@ -212,8 +224,7 @@ export const Nguoidung = () => {
       }
     };
     fetchData();
-  }, []);
-  console.log("header");
+  }, [currentPage, pageSize]);
   return (
     <Content className="containerUser">
       <Row align="middle">
@@ -257,18 +268,105 @@ export const Nguoidung = () => {
         </Col>
       </Row>
       <br />
+      <Row>
+      <Space>
+    <Select
+      defaultValue="lucy"
+      style={{
+        width: 120,
+      }}
+      options={[
+        {
+          value: 'jack',
+          label: 'Jack',
+        },
+        {
+          value: 'lucy',
+          label: 'Lucy',
+        },
+        {
+          value: 'Yiminghe',
+          label: 'yiminghe',
+        },
+        {
+          value: 'disabled',
+          label: 'Disabled',
+          disabled: true,
+        },
+      ]}
+    />
+    <Select
+      defaultValue="lucy"
+      style={{
+        width: 120,
+      }}
+      disabled
+      options={[
+        {
+          value: 'lucy',
+          label: 'Lucy',
+        },
+      ]}
+    />
+    <Select
+      defaultValue="lucy"
+      style={{
+        width: 120,
+      }}
+      loading
+      options={[
+        {
+          value: 'lucy',
+          label: 'Lucy',
+        },
+      ]}
+    />
+    <Select
+      defaultValue="lucy"
+      style={{
+        width: 120,
+      }}
+      allowClear
+      options={[
+        {
+          value: 'lucy',
+          label: 'Lucy',
+        },
+      ]}
+    />
+  </Space>
+      </Row>
       <div className="table-responsive">
         <Table
           columns={columns.filter((column) => column.visible)}
           dataSource={tableData}
-          rowClassName="myRow"  
-          pagination={{
-            pageSize: 5,
-          }}
+          rowClassName="myRow"
+          pagination={false}
         />
       </div>
+      <br />
+      <Row justify="space-between" align="middle">
+  <Col span={8}>
+  <p>{`${(currentPage - 1) * pageSize + 1}-${Math.min(currentPage * pageSize, total)} of ${total} items`}</p>
+  </Col>
+  <Col span={8} style={{ textAlign: 'center' }}>
+    <Pagination
+      current={currentPage}
+      total={total}
+      pageSize={pageSize}
+      onChange={handleCurrentPage}
+    />
+  </Col>
+  <Col span={8} style={{ textAlign: 'right' }}>
+    <Select value={pageSize.toString()} onChange={handlePageSizeChange}>
+      <Select.Option value="5">5</Select.Option>
+      <Select.Option value="10">10</Select.Option>
+      <Select.Option value="25">25</Select.Option>
+    </Select>
+  </Col>
+</Row>
       <Modal
-        title={activeForm==="add" ? "Thêm mới" : "Sửa"}
+        title={activeForm === "add" ? "Thêm mới" : "Sửa"}
         open={isModalOpen}
         onCancel={handleModalClose}
         footer={null}
@@ -303,32 +401,32 @@ const getTagColors = (tags, roles) => {
   return tagColors;
 };
 
-const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
+const CreatePopupForm = ({ onFinish, roles, record, activeForm }) => {
   console.log(activeForm, record);
   const disabled = true;
   const [form] = Form.useForm();
   useEffect(() => {
     form.setFieldsValue({
-      name:record.name,
-      username:record.username,
-      email:record.email,
+      name: record.name,
+      username: record.username,
+      email: record.email,
       phone: record.phone,
-      role_ids:record.tags,
+      role_ids: record.tags,
     });
   }, [record, form]);
-  onFinish =(values) =>{
-    if(activeForm==="add"){
+  onFinish = (values) => {
+    if (activeForm === "add") {
       postData(values);
     }
-    else{
-      values.khubaoton=[];
+    else {
+      values.khubaoton = [];
       values.id = record.key;
       console.log(values);
       putData(values);
     }
   }
   return (
-    <Form  form={form} onFinish={onFinish}>
+    <Form form={form} onFinish={onFinish}>
       <Form.Item
         name="name"
         rules={[
@@ -338,8 +436,6 @@ const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
         <Input
           prefix={<UserOutlined />}
           placeholder="Tên hiển thị"
-          // value={record.name}
-          value={test}
         ></Input>
       </Form.Item>
       <Form.Item
@@ -418,7 +514,7 @@ const CreatePopupForm = ({ onFinish, roles, record, test ,activeForm }) => {
       </Form.Item>
       <Form.Item>
         <Button type="primary" htmlType="submit">
-          Đăng ký
+          {activeForm === "add" ? "Thêm mới" : "Sửa"}
         </Button>
       </Form.Item>
     </Form>
