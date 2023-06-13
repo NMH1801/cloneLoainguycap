@@ -17,7 +17,7 @@ import {
   Spin,
   DatePicker,
 } from "antd";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Content } from "antd/es/layout/layout";
 import {
   SearchOutlined,
@@ -30,6 +30,7 @@ import { AuthContext } from "../../context/authContext";
 import { postData } from "../../ultis/postData";
 import { putData } from "../../ultis/putData";
 import { debounce } from "lodash";
+import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 
 export const Nguoidung = () => {
   const { user } = useContext(AuthContext);
@@ -48,44 +49,145 @@ export const Nguoidung = () => {
   const [inactive, setInactive] = useState();
   const [filterRole, setFilterRole] = useState();
   const [search, setSearch] = useState();
+  const [count, setCount] = useState(0);
+  const [sortName, setSortName] = useState(0);
+  const [sortUserName, setSortUserName] = useState(0);
+  const [sortStatus, setSortStatus] = useState(0);
+  const [sortDate, setSortDate] = useState(0);
+  const [sortControl, setSortControl] = useState([0, 0, 0, 0]);
+  const handleSort = (type) => {
+    switch (type) {
+      case "name":
+        if (sortName === 0) {
+          setSortName(sortName + 1);
+          setCount(count + 1);
+          const newSortControl = [...sortControl];
+          newSortControl[0] = count + 1;
+          setSortControl(newSortControl);
+        } else if (sortName === 1) {
+          setSortName(sortName + 1);
+        } else {
+          setSortName(0);
+          setCount(count - 1);
+          const newSortControl = [...sortControl];
+          newSortControl[0] = 0;
+            newSortControl.forEach(function (element, index) {
+              if (newSortControl[index] > sortControl[0]) {
+                newSortControl[index] = element - 1;
+              }
+            });
+            setSortControl(newSortControl);
+        }
+        break;
+      case "username":
+        if (sortUserName === 0) {
+          setSortUserName(sortUserName + 1);
+          setCount(count + 1);
+          const newSortControl = [...sortControl];
+          newSortControl[1] = count + 1;
+          setSortControl(newSortControl);
+        } else if (sortUserName === 1) {
+          setSortUserName(sortUserName + 1);
+        } else {
+          setSortUserName(0);
+          setCount(count - 1);
+          const newSortControl = [...sortControl];
+          newSortControl[1] = 0;
+          newSortControl.forEach(function (element, index) {
+            if (newSortControl[index] > sortControl[1]) {
+              newSortControl[index] = element - 1;
+            }
+          });
+          setSortControl(newSortControl);
+        }
+        break;
+      case "status":
+        if (sortStatus === 0) {
+          setSortStatus(sortStatus + 1);
+          setCount(count + 1);
+          const newSortControl = [...sortControl];
+          newSortControl[2] = count + 1;
+          setSortControl(newSortControl);
+        } else if (sortStatus === 1) {
+          setSortStatus(sortStatus + 1);
+        } else {
+          setSortStatus(0);
+          setCount(count - 1);
+          const newSortControl = [...sortControl];
+          newSortControl[2] = 0;
+            newSortControl.forEach(function (element, index) {
+              if (newSortControl[index] > sortControl[2]) {
+                newSortControl[index] = element - 1;
+              }
+            });
+            setSortControl(newSortControl);
+          
+        }
+        break;
+      case "date":
+        if (sortDate === 0) {
+          setSortDate(sortDate + 1);
+          setCount(count + 1);
+          const newSortControl = [...sortControl];
+          newSortControl[3] = count + 1;
+          setSortControl(newSortControl);
+        } else if (sortDate === 1) {
+          setSortDate(sortDate + 1);
+        } else {
+          setSortDate(0);
+          setCount(count - 1);
+          const newSortControl = [...sortControl];
+          newSortControl[3] = 0;
+          newSortControl.forEach(function (element, index) {
+            if (newSortControl[index] > sortControl[3]) {
+              newSortControl[index] = element - 1;
+            }
+          });
+          setSortControl(newSortControl);
+        }
+        break;
+      default:
+        break;
+    }
+  };
   const handleDateStartChange = (date, dateString) => {
     let convertedDate = dateString.replace(/\//g, "%2F");
-    if(date===null){
-      convertedDate=null;
+    if (date === null) {
+      convertedDate = null;
     }
     setDateStart(convertedDate);
   };
 
   const handleDateEndChange = (date, dateString) => {
     let convertedDate = dateString.replace(/\//g, "%2F");
-    if(date===null){
-      convertedDate=null;
+    if (date === null) {
+      convertedDate = null;
     }
     setDateEnd(convertedDate);
   };
-  const handleFilterRoleChange = (value) =>{
-    if(value===undefined){
-      value=null;
+  const handleFilterRoleChange = (value) => {
+    if (value === undefined) {
+      value = null;
     }
     setFilterRole(value);
-  }
+  };
   const handlePageSizeChange = (value) => {
     setPageSize(value);
   };
   const handleCurrentPage = (page) => {
     setCurrentPage(page);
   };
-  const handleSearch =(value) => {
-    if(value===""){
-      value=null;
+  const handleSearch = (value) => {
+    if (value === "") {
+      value = null;
     }
     setSearch(value);
-  }
+  };
   const handleSearchDebounced = debounce(handleSearch, 500);
 
-  const handleSearchChange= (e) =>{
-    handleSearchDebounced(e.target.value)
-  }
+  const handleSearchChange = (e) => {
+    handleSearchDebounced(e.target.value);
+  };
   useEffect(() => {
     const getRoles = async () => {
       try {
@@ -121,21 +223,50 @@ export const Nguoidung = () => {
 
   const columns = [
     {
-      title: "Tên hiển thị",
+      title: (() => {
+        if (sortName === 1) {
+          return <><span>Tên hiển thị <AiOutlineArrowDown/></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
+        } else if (sortName === 2) {
+          return <><span>Tên hiển thị <AiOutlineArrowUp/></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
+        } else {
+          return 'Tên hiển thị';
+        }
+      })(),
       dataIndex: "name",
       visible: true,
-      sorter: {
-        compare: (a, b) => a.chinese - b.chinese,
-        multiple: 3,
+      onHeaderCell: () => {
+        return {
+          onClick: () => {
+            handleSort("name");
+            
+          },
+          style: {
+            cursor: "pointer"
+          }
+        };
       },
     },
     {
-      title: "Tên đăng nhập",
+      title: (() => {
+        if (sortUserName === 1) {
+          return <><span>Tên đăng nhập <AiOutlineArrowDown/></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
+        } else if (sortUserName === 2) {
+          return <><span>Tên đăng nhập <AiOutlineArrowUp/></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
+        } else {
+          return 'Tên đăng nhập';
+        }
+      }),
       dataIndex: "username",
       visible: true,
-      sorter: {
-        compare: (a, b) => a.chinese - b.chinese,
-        multiple: 3,
+      onHeaderCell: () => {
+        return {
+          onClick: () => {
+            handleSort("username");
+          },
+          style: {
+            cursor: "pointer"
+          }
+        };
       },
     },
     {
@@ -145,26 +276,36 @@ export const Nguoidung = () => {
     },
     { title: "Email", dataIndex: "email", visible: false },
     {
-      title: "Trạng thái",
+      title: (() => {
+        if (sortStatus === 1) {
+          return <><span>Trạng thái <AiOutlineArrowDown/></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
+        } else if (sortStatus === 2) {
+          return <><span>Trạng thái <AiOutlineArrowUp/></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
+        } else {
+          return 'Trạng thái';
+        }
+      }),
       dataIndex: "status",
       visible: true,
-      sorter: {
-        compare: (a, b) => a.english - b.english,
-        multiple: 1,
+      onHeaderCell: () => {
+        return {
+          onClick: () => {
+            handleSort("status");
+          },
+          style: {
+            cursor: "pointer"
+          }
+        };
       },
-      render: (status, record) => {
-        return (
-          <Switch
-            checked={status}
-            // onChange={() => handleStatusChange(record)}
-          />
-        );
+      render: (status) => {
+        return <Switch checked={status} />;
       },
     },
     {
       title: "Quyền",
       dataIndex: "tags",
       visible: true,
+      width:600,
       render: (_, { tags }) => {
         const tagColors = getTagColors(tags, roles);
 
@@ -186,9 +327,27 @@ export const Nguoidung = () => {
     },
 
     {
-      title: "Ngày tạo",
+      title: (() => {
+        if (sortDate === 1) {
+          return <><span>Ngày tạo<AiOutlineArrowDown/></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
+        } else if (sortDate === 2) {
+          return <><span>Ngày tạo <AiOutlineArrowUp/></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
+        } else {
+          return 'Ngày tạo';
+        }
+      }),
       dataIndex: "timeCreate",
       visible: true,
+      onHeaderCell: () => {
+        return {
+          onClick: () => {
+            handleSort("date");
+          },
+          style: {
+            cursor: "pointer"
+          }
+        };
+      },
     },
     {
       title: "Hành động",
@@ -223,9 +382,9 @@ export const Nguoidung = () => {
         const response = await getDataAuth("user", [currentPage, pageSize], {
           inactive: inactive,
           dateStart: dateStart,
-          dateEnd:dateEnd,
-          filterRole:filterRole,
-          search:search,
+          dateEnd: dateEnd,
+          filterRole: filterRole,
+          search: search,
         });
         const Data = await response.data;
         setLoading(false);
@@ -292,8 +451,8 @@ export const Nguoidung = () => {
                 username: "",
                 phoneNumber: "",
                 roles_id: "",
-                password:"",
-                confirmPassword:"",
+                password: "",
+                confirmPassword: "",
               });
               showModal();
             }}
@@ -305,27 +464,27 @@ export const Nguoidung = () => {
       <br />
       <Row>
         <Space>
-        <Select
-      defaultValue="null"
-      style={{
-        width: 120,
-      }}
-      onChange={handleStatusFilterChange}
-      options={[
-        {
-          value: 'false',
-          label: 'Hoạt động',
-        },
-        {
-          value: 'true',
-          label: 'Vô hiệu',
-        },
-        {
-          value: 'null',
-          label: 'Toàn bộ',
-        },
-      ]}
-    />
+          <Select
+            defaultValue="null"
+            style={{
+              width: 120,
+            }}
+            onChange={handleStatusFilterChange}
+            options={[
+              {
+                value: "false",
+                label: "Hoạt động",
+              },
+              {
+                value: "true",
+                label: "Vô hiệu",
+              },
+              {
+                value: "null",
+                label: "Toàn bộ",
+              },
+            ]}
+          />
           <Select
             style={{
               width: 200,
@@ -352,7 +511,7 @@ export const Nguoidung = () => {
           />
         </Space>
       </Row>
-      <br/>
+      <br />
       <Spin spinning={loading}>
         <div className="table-responsive">
           <Table
@@ -422,7 +581,13 @@ const getTagColors = (tags, roles) => {
   return tagColors;
 };
 
-const CreatePopupForm = ({ onFinish, roles, record, activeForm, handleModalClose }) => {
+const CreatePopupForm = ({
+  onFinish,
+  roles,
+  record,
+  activeForm,
+  handleModalClose,
+}) => {
   const disabled = true;
   const [form] = Form.useForm();
   useEffect(() => {
@@ -447,8 +612,6 @@ const CreatePopupForm = ({ onFinish, roles, record, activeForm, handleModalClose
       setTimeout(() => {
         handleModalClose();
       }, 2000);
-
-     
     } catch (error) {
       console.error(error);
     }

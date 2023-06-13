@@ -1,25 +1,57 @@
 import React, { useState } from 'react';
-import { Input } from 'antd';
+import { Table } from 'antd';
 
 export const Test = () => {
-  const [value, setValue] = useState('');
+  const [dataSource, setDataSource] = useState([
+    { id: 1, name: 'John', age: 25 },
+    { id: 2, name: 'Jane', age: 30 },
+    { id: 3, name: 'Bob', age: 35 },
+  ]);
 
-  // Hàm xử lý thay đổi giá trị
-  const handleChange = (event) => {
-    const { value } = event.target;
-    setValue(value);
+  const handleTableChange = (pagination, filters, sorter) => {
+    setDataSource((prevDataSource) => {
+      if (sorter.field) {
+        const sortedData = [...prevDataSource].sort((a, b) => {
+          if (sorter.order === 'ascend') {
+            return a[sorter.field] - b[sorter.field];
+          } else if (sorter.order === 'descend') {
+            return b[sorter.field] - a[sorter.field];
+          }
+          return 0;
+        });
+
+        return sortedData;
+      }
+      return prevDataSource;
+    });
   };
 
-  // Kiểm tra nếu có giá trị được chọn thì sử dụng placeholder trống
-  const placeholder = value ? '' : 'Tìm kiếm theo tên hoặc số điện thoại';
+  const columns = [
+    {
+      title: 'ID',
+      dataIndex: 'id',
+      sorter: true,
+      sortDirections: ['ascend', 'descend'],
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      sorter: true,
+      sortDirections: ['ascend', 'descend'],
+    },
+    {
+      title: 'Age',
+      dataIndex: 'age',
+      sorter: true,
+      sortDirections: ['ascend', 'descend'],
+    },
+  ];
 
   return (
-    <Input
-      size="large"
-      className="inputUser"
-      value={value}
-      onChange={handleChange}
-      placeholder={placeholder}
+    <Table
+      dataSource={dataSource}
+      columns={columns}
+      onChange={handleTableChange}
     />
   );
 };
