@@ -292,6 +292,8 @@ export const Nguoidung = () => {
                 username: "",
                 phoneNumber: "",
                 roles_id: "",
+                password:"",
+                confirmPassword:"",
               });
               showModal();
             }}
