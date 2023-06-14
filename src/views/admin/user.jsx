@@ -179,6 +179,7 @@ export const Nguoidung = () => {
   };
   const handlePageSizeChange = (value) => {
     setPageSize(value);
+    setCurrentPage(1);
   };
   const handleCurrentPage = (page) => {
     setCurrentPage(page);
