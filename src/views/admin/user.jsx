@@ -31,6 +31,7 @@ import { postData } from "../../ultis/postData";
 import { putData } from "../../ultis/putData";
 import { debounce } from "lodash";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import { deleteData } from "../../ultis/deleteData";
 
 export const Nguoidung = () => {
   const { user } = useContext(AuthContext);
@@ -55,6 +56,8 @@ export const Nguoidung = () => {
   const [sortStatus, setSortStatus] = useState(0);
   const [sortDate, setSortDate] = useState(0);
   const [sortControl, setSortControl] = useState([0, 0, 0, 0]);
+  const [isModalDeleteOpen, setIsModalDeleteOpen] = useState(false);
+  const [reload, setReload] = useState(true);
   const handleSort = (type) => {
     switch (type) {
       case "name":
@@ -71,12 +74,12 @@ export const Nguoidung = () => {
           setCount(count - 1);
           const newSortControl = [...sortControl];
           newSortControl[0] = 0;
-            newSortControl.forEach(function (element, index) {
-              if (newSortControl[index] > sortControl[0]) {
-                newSortControl[index] = element - 1;
-              }
-            });
-            setSortControl(newSortControl);
+          newSortControl.forEach(function (element, index) {
+            if (newSortControl[index] > sortControl[0]) {
+              newSortControl[index] = element - 1;
+            }
+          });
+          setSortControl(newSortControl);
         }
         break;
       case "username":
@@ -115,13 +118,13 @@ export const Nguoidung = () => {
           setCount(count - 1);
           const newSortControl = [...sortControl];
           newSortControl[2] = 0;
-            newSortControl.forEach(function (element, index) {
-              if (newSortControl[index] > sortControl[2]) {
-                newSortControl[index] = element - 1;
-              }
-            });
-            setSortControl(newSortControl);
-          
+          newSortControl.forEach(function (element, index) {
+            if (newSortControl[index] > sortControl[2]) {
+              newSortControl[index] = element - 1;
+            }
+          });
+          setSortControl(newSortControl);
+
         }
         break;
       case "date":
@@ -156,6 +159,7 @@ export const Nguoidung = () => {
       convertedDate = null;
     }
     setDateStart(convertedDate);
+    setCurrentPage(1);
   };
 
   const handleDateEndChange = (date, dateString) => {
@@ -164,12 +168,14 @@ export const Nguoidung = () => {
       convertedDate = null;
     }
     setDateEnd(convertedDate);
+    setCurrentPage(1);
   };
   const handleFilterRoleChange = (value) => {
     if (value === undefined) {
       value = null;
     }
     setFilterRole(value);
+    setCurrentPage(1);
   };
   const handlePageSizeChange = (value) => {
     setPageSize(value);
@@ -182,6 +188,7 @@ export const Nguoidung = () => {
       value = null;
     }
     setSearch(value);
+    setCurrentPage(1);
   };
   const handleSearchDebounced = debounce(handleSearch, 500);
 
@@ -216,18 +223,32 @@ export const Nguoidung = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
-
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+  const showModalDelete =() =>{
+    setIsModalDeleteOpen(true);
+  }
+  const deleteOk =() =>{
+    deleteData(record.key);
+    setIsModalDeleteOpen(false);
+    setTimeout(() => {
+      setReload(!reload);
+    }, 1000);
+    
+  }
+
+  const deleteCancel =() =>{
+    setIsModalDeleteOpen(false);
+  }
 
   const columns = [
     {
       title: (() => {
         if (sortName === 1) {
-          return <><span>Tên hiển thị <AiOutlineArrowDown/></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
+          return <><span>Tên hiển thị <AiOutlineArrowDown /></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
         } else if (sortName === 2) {
-          return <><span>Tên hiển thị <AiOutlineArrowUp/></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
+          return <><span>Tên hiển thị <AiOutlineArrowUp /></span> {sortControl[0] !== 0 ? ` ${sortControl[0]}` : ''} </>;
         } else {
           return 'Tên hiển thị';
         }
@@ -238,7 +259,7 @@ export const Nguoidung = () => {
         return {
           onClick: () => {
             handleSort("name");
-            
+
           },
           style: {
             cursor: "pointer"
@@ -249,9 +270,9 @@ export const Nguoidung = () => {
     {
       title: (() => {
         if (sortUserName === 1) {
-          return <><span>Tên đăng nhập <AiOutlineArrowDown/></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
+          return <><span>Tên đăng nhập <AiOutlineArrowDown /></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
         } else if (sortUserName === 2) {
-          return <><span>Tên đăng nhập <AiOutlineArrowUp/></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
+          return <><span>Tên đăng nhập <AiOutlineArrowUp /></span> {sortControl[1] !== 0 ? ` ${sortControl[1]}` : ''} </>;
         } else {
           return 'Tên đăng nhập';
         }
@@ -278,9 +299,9 @@ export const Nguoidung = () => {
     {
       title: (() => {
         if (sortStatus === 1) {
-          return <><span>Trạng thái <AiOutlineArrowDown/></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
+          return <><span>Trạng thái <AiOutlineArrowDown /></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
         } else if (sortStatus === 2) {
-          return <><span>Trạng thái <AiOutlineArrowUp/></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
+          return <><span>Trạng thái <AiOutlineArrowUp /></span> {sortControl[2] !== 0 ? ` ${sortControl[2]}` : ''} </>;
         } else {
           return 'Trạng thái';
         }
@@ -305,7 +326,7 @@ export const Nguoidung = () => {
       title: "Quyền",
       dataIndex: "tags",
       visible: true,
-      width:600,
+      width: 600,
       render: (_, { tags }) => {
         const tagColors = getTagColors(tags, roles);
 
@@ -329,9 +350,9 @@ export const Nguoidung = () => {
     {
       title: (() => {
         if (sortDate === 1) {
-          return <><span>Ngày tạo<AiOutlineArrowDown/></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
+          return <><span>Ngày tạo<AiOutlineArrowDown /></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
         } else if (sortDate === 2) {
-          return <><span>Ngày tạo <AiOutlineArrowUp/></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
+          return <><span>Ngày tạo <AiOutlineArrowUp /></span> {sortControl[3] !== 0 ? ` ${sortControl[3]}` : ''} </>;
         } else {
           return 'Ngày tạo';
         }
@@ -366,13 +387,23 @@ export const Nguoidung = () => {
               showModal();
             }}
           />
-          <Button type="link" icon={<FaRegTrashAlt />} className="red" />
+          <Button
+            type="link"
+            icon={<FaRegTrashAlt />}
+            className="red"
+            onClick={() => {
+              setRecord(record);
+              // setActiveForm("edit");
+              showModalDelete();
+              
+            }} />
         </Space>
       ),
     },
   ];
   const handleStatusFilterChange = (value) => {
     setInactive(value);
+    setCurrentPage(1);
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -385,7 +416,7 @@ export const Nguoidung = () => {
           dateEnd: dateEnd,
           filterRole: filterRole,
           search: search,
-        },sortControl,[sortName, sortUserName, sortStatus, sortDate ] );
+        }, sortControl, [sortName, sortUserName, sortStatus, sortDate]);
         const Data = await response.data;
         setLoading(false);
         setTotal(Data.pagination.total);
@@ -415,7 +446,7 @@ export const Nguoidung = () => {
       }
     };
     fetchData();
-  }, [currentPage, pageSize, dateStart, dateEnd, inactive, filterRole, search, sortControl, sortDate, sortName, sortStatus, sortUserName]);
+  }, [currentPage, pageSize, dateStart, dateEnd, inactive, filterRole, search, sortControl, sortDate, sortName, sortStatus, sortUserName, reload]);
   return (
     <Content className="containerUser">
       <Row align="middle">
@@ -551,13 +582,19 @@ export const Nguoidung = () => {
         open={isModalOpen}
         onCancel={handleModalClose}
         footer={null}
+        
       >
         <CreatePopupForm
           roles={roles}
           record={record}
           activeForm={activeForm}
           handleModalClose={handleModalClose}
+          setReload={setReload}
+        reload={reload}
         />
+      </Modal>
+      <Modal title="Xóa" open={isModalDeleteOpen}  onOk={deleteOk} onCancel={deleteCancel}>
+        <p>Bạn có xác nhận xóa người dùng này không </p>
       </Modal>
     </Content>
   );
@@ -587,6 +624,8 @@ const CreatePopupForm = ({
   record,
   activeForm,
   handleModalClose,
+  setReload,
+  reload
 }) => {
   const disabled = true;
   const [form] = Form.useForm();
@@ -609,6 +648,9 @@ const CreatePopupForm = ({
         values.id = record.key;
         await putData(values);
       }
+      setTimeout(() => {
+        setReload(!reload);
+      }, 1000);
       setTimeout(() => {
         handleModalClose();
       }, 2000);

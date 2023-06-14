@@ -9,7 +9,11 @@ export const PrivateRoute = () => {
     return <div></div>;
   }
   console.log(isAuthenticated, isChecking);
-  return isAuthenticated ? <Outlet /> : <Navigate to="/dang-nhap" replace />;
+  if(!isAuthenticated){
+    return <Navigate to="/dang-nhap" replace/>
+  }
+  else{
+  return <Outlet/>}
 };
 
 export const NavigateRoute = () =>{

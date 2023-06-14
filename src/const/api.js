@@ -51,7 +51,7 @@ export const getDataAdmin = (param, array, filter, sort, sign) => {
       }
     }
     for (let i = 0; i < sign.length; i++) {
-      if (sign[i] === 1) {
+      if (sign[i] === 1 && newSortArray[i]!=="") {
         newSortArray[i] = "-" + newSortArray[i];
       }
     }
