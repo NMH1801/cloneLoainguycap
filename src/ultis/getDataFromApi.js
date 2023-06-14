@@ -5,7 +5,7 @@ export const getDataFromApi= async(param, filter) => {
   const jsonData = await response.json();
   return jsonData;
 }
-export const getDataAuth = async (param, array, filter) => {
+export const getDataAuth = async (param, array, filter, sort, sign) => {
   const token=localStorage.getItem("jwtToken");
   const config = {
     headers: {
@@ -13,7 +13,7 @@ export const getDataAuth = async (param, array, filter) => {
     },
   };
   return axios
-  .get(getDataAdmin(param, array, filter), config)
+  .get(getDataAdmin(param, array, filter, sort, sign), config)
   .then((res) => {
     return res
   })

@@ -1,5 +1,3 @@
-import { FaUnderline } from "react-icons/fa";
-
 const endpoint = "http://wlp.howizbiz.com/api/";
 const routerObject = {
   domain: "http://wlp.howizbiz.com",
@@ -34,9 +32,34 @@ export function getRoute(param, filter) {
   return endpoint + routerObject[param] + filter;
 }
 
-export const getDataAdmin = (param, array, filter) => {
+export const getDataAdmin = (param, array, filter, sort, sign) => {
   if (array === undefined) {
     return endpoint + routerObject[param];
+  }
+  let sortList = "&sort=";
+  if (sort !== undefined) {
+    let count = 3;
+
+    let newSortArray = [...sort];
+    let mapping = ["name,", "username,", "inactive,", "created_at,"];
+    for (let i = 0; i < newSortArray.length; i++) {
+      if (sort[i] !== 0) {
+        newSortArray[sort[i] - 1] = mapping[i];
+      } else {
+        newSortArray[count] = "";
+        count--;
+      }
+    }
+    for (let i = 0; i < sign.length; i++) {
+      if (sign[i] === 1) {
+        newSortArray[i] = "-" + newSortArray[i];
+      }
+    }
+    sortList = sortList+ newSortArray.join("");
+  }
+
+  if (sortList === "sort=") {
+    sortList = "";
   }
   let filterlist = "";
   if (filter.search != null) {
@@ -62,6 +85,7 @@ export const getDataAdmin = (param, array, filter) => {
     array[0] +
     "&perpage=" +
     array[1] +
+    sortList +
     "&with=roles,createdBy,provinces" +
     filterlist
   );

@@ -385,7 +385,7 @@ export const Nguoidung = () => {
           dateEnd: dateEnd,
           filterRole: filterRole,
           search: search,
-        });
+        },sortControl,[sortName, sortUserName, sortStatus, sortDate ] );
         const Data = await response.data;
         setLoading(false);
         setTotal(Data.pagination.total);
@@ -415,7 +415,7 @@ export const Nguoidung = () => {
       }
     };
     fetchData();
-  }, [currentPage, pageSize, dateStart, dateEnd, inactive, filterRole, search]);
+  }, [currentPage, pageSize, dateStart, dateEnd, inactive, filterRole, search, sortControl, sortDate, sortName, sortStatus, sortUserName]);
   return (
     <Content className="containerUser">
       <Row align="middle">
